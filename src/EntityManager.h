@@ -71,6 +71,12 @@ namespace enttx {
         template<typename... Cs>
         auto hasComponents(Entity const& entity) const -> enable_if_components<std::bitset<sizeof...(Cs)>, Cs...>;
 
+        template<typename Fn, typename Component>
+        auto applyForComponents(Entity const& entity, Fn&& fn) -> enable_if_component<Component>;
+
+        template<typename Fn, typename Component, typename... Tail>
+        void applyForComponents(Entity const& entity, Fn&& fn);
+
     private:
         std::vector<uint32_t> versions_;
         std::vector<uint32_t> dump_;
@@ -243,6 +249,29 @@ namespace enttx {
         (result.set(hasComponent<Cs>(entity)), ...);
 
         return result;
+    }
+
+    template<typename... Components, typename... Storages>
+    template<typename Fn, typename Component>
+    auto EntityManager<Config<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>
+        ::applyForComponents(Entity const& entity, Fn&& fn) -> enable_if_component<Component>
+    {
+        static_assert(std::is_invocable_v<Fn, Component&>);
+
+        assert(isValid(entity));
+
+        if (masks_[entity.index()].test(component_list_t::template get_type_index<Component>::value)) {
+            fn(std::get<component_list_t::template get_type_index<Component>::value>(storage_).template get(entity));
+        }
+    }
+
+    template<typename... Components, typename... Storages>
+    template<typename Fn, typename Component, typename... Tail>
+    void EntityManager<Config<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>
+        ::applyForComponents(Entity const& entity, Fn&& fn)
+    {
+        applyForComponents<Fn, Component>(entity, std::forward<Fn>(fn));
+        applyForComponents<Fn, Tail...>(entity, std::forward<Fn>(fn));
     }
 }
 

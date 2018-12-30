@@ -6,7 +6,7 @@
 #define ENTTX_CONFIG_H
 
 #include <bitset>
-#include <type_list.h>
+#include <easy-mp/type_list.h>
 
 namespace enttx {
     template<typename ComponentList, typename StorageList>
