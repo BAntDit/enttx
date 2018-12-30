@@ -32,6 +32,10 @@ namespace enttx {
 
         void reset();
 
+        auto data() const -> std::pair<Component const*, size_t>;
+
+        auto data() -> std::pair<Component*, size_t>;
+
     private:
         std::vector<std::array<Component, CHUNK_SIZE>> store_;
     };
@@ -85,6 +89,20 @@ namespace enttx {
     void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::reset()
     {
         store_.resize(0);
+    }
+
+    template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
+    auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>
+        ::data() const -> std::pair<Component const*, size_t>
+    {
+        return { static_cast<Component const*>(store_.data()), store_.data() * CHUNK_SIZE };
+    }
+
+    template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
+    auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>
+        ::data() -> std::pair<Component*, size_t>
+    {
+        return { static_cast<Component*>(store_.data()), store_.data() * CHUNK_SIZE };
     }
 }
 
