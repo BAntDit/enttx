@@ -13,6 +13,8 @@ namespace enttx {
     template<typename Derived, typename Component>
     class BaseComponentStorage {
     public:
+        auto get(uint32_t index) const -> Component const&;
+
         auto get(uint32_t index) -> Component&;
 
         template<typename... Args>
@@ -20,8 +22,19 @@ namespace enttx {
 
         void destroy(uint32_t index);
 
-        void resize(size_t size);
+        void resize(size_t chunkCount);
+
+        void reset();
+
+        auto data() const -> std::pair<Component const*, size_t>;
+
+        auto data() -> std::pair<Component*, size_t>;
     };
+
+    template<typename Derived, typename Component>
+    auto BaseComponentStorage<Derived, Component>::get(uint32_t index) const -> Component const& {
+        return static_cast<Derived const*>(this)->get(index);
+    }
 
     template<typename Derived, typename Component>
     auto BaseComponentStorage<Derived, Component>::get(uint32_t index) -> Component& {
@@ -41,8 +54,25 @@ namespace enttx {
     }
 
     template<class Derived, typename Component>
-    void BaseComponentStorage<Derived, Component>::resize(size_t size) {
-        static_cast<Derived*>(this)->resize(size);
+    void BaseComponentStorage<Derived, Component>::resize(size_t chunkCount) {
+        static_cast<Derived*>(this)->resize(chunkCount);
+    }
+
+    template<class Derived, typename Component>
+    void BaseComponentStorage<Derived, Component>::reset() {
+        static_cast<Derived*>(this)->reset();
+    }
+
+    template<class Derived, typename Component>
+    auto BaseComponentStorage<Derived, Component>::data() const -> std::pair<Component const*, size_t>
+    {
+        return static_cast<Derived const*>(this)->data();
+    }
+
+    template<class Derived, typename Component>
+    auto BaseComponentStorage<Derived, Component>::data() -> std::pair<Component*, size_t>
+    {
+        return static_cast<Derived*>(this)->data();
     }
 }
 

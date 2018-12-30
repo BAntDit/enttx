@@ -6,7 +6,8 @@ set(PUBLIC_HEADERS
     src/config.h
     src/entity.h
     src/EntityManager.h
-    src/BaseComponentStorage.h
+    src/baseComponentStorage.h
+    src/componentStorage.h
 )
 
 set(SOURCE_FILES
