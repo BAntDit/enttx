@@ -8,6 +8,8 @@ set(PUBLIC_HEADERS
     src/EntityManager.h
     src/baseComponentStorage.h
     src/componentStorage.h
+    src/baseSystem.h
+    src/systemManager.h
 )
 
 set(SOURCE_FILES
@@ -45,6 +47,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 find_package(easy-mp REQUIRED)
+
+find_package(Boost REQUIRED)
 
 set(ALL_SOURCES_FOR_STYLE_CORRECTION ${PUBLIC_HEADERS} ${SOURCE_FILES})
 
