@@ -12,45 +12,13 @@ set(PUBLIC_HEADERS
     src/systemManager.h
 )
 
-set(SOURCE_FILES
-    src/entity.cpp
-)
-
-add_library(enttx SHARED
-    ${PUBLIC_HEADERS}
-    ${SOURCE_FILES}
-)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    VERSION ${PROJECT_VERSION}
-
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS OFF
-
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -fPIC"
-
-    DEBUG_POSTFIX _d
-)
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        -pedantic
-        -Wall
-        -Wextra
-        -Wfatal-errors
-    )
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        /Wall
-    )
-endif()
+add_library(enttx INTERFACE)
 
 find_package(easy-mp REQUIRED)
 
 find_package(Boost REQUIRED)
 
-set(ALL_SOURCES_FOR_STYLE_CORRECTION ${PUBLIC_HEADERS} ${SOURCE_FILES})
+set(ALL_SOURCES_FOR_STYLE_CORRECTION ${PUBLIC_HEADERS})
 
 include(ClangFormat.cmake)
 CODE_STYLE_CORRECTION("${ALL_SOURCES_FOR_STYLE_CORRECTION}")
