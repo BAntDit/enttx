@@ -12,13 +12,20 @@ namespace enttx {
 class Entity
 {
 public:
-    Entity() : id_{ 0 } { }
+    Entity()
+      : id_{ 0 }
+    {
+    }
 
-    explicit Entity(uint64_t id) : id_{ id } { }
+    explicit Entity(uint64_t id)
+      : id_{ id }
+    {
+    }
 
-    Entity(uint32_t index, uint32_t version) :
-        id_{ static_cast<uint64_t>(index) | static_cast<uint64_t>(version) << 32UL }
-    { }
+    Entity(uint32_t index, uint32_t version)
+      : id_{ static_cast<uint64_t>(index) | static_cast<uint64_t>(version) << 32UL }
+    {
+    }
 
     explicit operator uint64_t() const { return id_; }
 
