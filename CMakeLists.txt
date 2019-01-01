@@ -27,6 +27,8 @@ find_package(easy-mp REQUIRED)
 
 find_package(Boost REQUIRED)
 
+add_subdirectory("example")
+
 set(ALL_SOURCES_FOR_STYLE_CORRECTION ${PUBLIC_HEADERS})
 
 include(ClangFormat.cmake)
