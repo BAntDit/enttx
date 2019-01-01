@@ -19,8 +19,6 @@ class ComponentStorage
 public:
     ComponentStorage();
 
-    ~ComponentStorage() = default;
-
     auto get(uint32_t index) const -> Component const&;
 
     auto get(uint32_t index) -> Component&;
