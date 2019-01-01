@@ -6,6 +6,7 @@
 #define ENTTX_BASESYSTEM_H
 
 #include <boost/cstdfloat.hpp>
+#include <cstddef>
 
 namespace enttx {
 template<class Derived>
@@ -15,21 +16,15 @@ public:
     template<typename... Args>
     void init(Args&&... args);
 
-    void earlyUpdate(boost::float32_t dt);
-
-    void lateUpdate(boost::float32_t dt);
+    template<size_t STAGE>
+    void update(boost::float32_t dt);
 };
 
-template<class Derived>
-void BaseSystem<Derived>::earlyUpdate(boost::float32_t dt)
+template<typename Derived>
+template<size_t STAGE>
+void BaseSystem<Derived>::update(boost::float32_t dt)
 {
-    static_cast<Derived*>(this)->earlyUpdate(dt);
-}
-
-template<class Derived>
-void BaseSystem<Derived>::lateUpdate(boost::float32_t dt)
-{
-    static_cast<Derived*>(this)->lateUpdate(dt);
+    static_cast<Derived*>(this)->update<STAGE>(dt);
 }
 
 template<class Derived>

@@ -6,6 +6,7 @@
 #define ENTTX_CONFIG_H
 
 #include <bitset>
+#include <cstddef>
 #include <easy-mp/type_list.h>
 
 namespace enttx {
@@ -24,12 +25,14 @@ struct EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list
     using component_mask_t = std::bitset<component_list_t::size>;
 };
 
-template<typename SystemList>
+template<size_t UPDATE_STAGE_COUNT, typename SystemList>
 struct SystemManagerConfig;
 
-template<typename... Systems>
-struct SystemManagerConfig<easy_mp::type_list<Systems...>>
+template<size_t UPDATE_STAGE_COUNT, typename... Systems>
+struct SystemManagerConfig<UPDATE_STAGE_COUNT, easy_mp::type_list<Systems...>>
 {
+    static constexpr size_t updateStageCount = UPDATE_STAGE_COUNT;
+
     static constexpr size_t systemCount = sizeof...(Systems);
 
     using system_list_t = easy_mp::type_list<Systems...>;
