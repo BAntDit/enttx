@@ -25,6 +25,8 @@ public:
 
     using component_list_t = typename config_t::component_list_t;
 
+    using storage_list_t = typename config_t::storage_list_t;
+
     template<typename C, typename R = void>
     using enable_if_component = std::enable_if_t<component_list_t::template has_type<C>::value, R>;
 
@@ -32,6 +34,10 @@ public:
     using enable_if_components = std::enable_if_t<
       std::is_same_v<easy_mp::inner_join<component_list_t, easy_mp::type_list<Cs...>>, easy_mp::type_list<Cs...>>,
       R>;
+
+    template<typename C>
+    using component_storage_t =
+      typename storage_list_t::template get_type<component_list_t::template get_type_index<Component>::value>::type;
 
     explicit EntityManager(size_t initialSize = 10000);
 
@@ -77,6 +83,12 @@ public:
 
     template<typename Fn, typename Component, typename... Tail>
     void applyForComponents(Entity const& entity, Fn&& fn);
+
+    template<typename Component>
+    auto getStorage() const -> enable_if_component<Component, component_storage_t<Component> const&>;
+
+    template<typename Component>
+    auto getStorage() -> enable_if_storage<Storage, component_storage_t<Component>&>;
 
 private:
     std::vector<uint32_t> versions_;
@@ -274,6 +286,24 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 {
     applyForComponents<Fn, Component>(entity, std::forward<Fn>(fn));
     applyForComponents<Fn, Tail...>(entity, std::forward<Fn>(fn));
+}
+
+template<typename... Components, typename... Storages>
+template<typename Component>
+auto EntityManager<
+  EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getStorage() const
+  -> enable_if_component<Component, component_storage_t<Component> const&>
+{
+    return std::get<component_list_t::template get_type_index<Component>::value>(storage_);
+}
+
+template<typename... Components, typename... Storages>
+template<typename Component>
+auto EntityManager<
+  EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getStorage()
+  -> enable_if_component<Component, component_storage_t<Component>&>
+{
+    return const_cast<component_storage_t<Component>&>(std::as_const(this)->template getStorage<Component>());
 }
 }
 
