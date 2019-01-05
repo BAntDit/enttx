@@ -88,7 +88,7 @@ public:
     auto getStorage() const -> enable_if_component<Component, component_storage_t<Component> const&>;
 
     template<typename Component>
-    auto getStorage() -> enable_if_storage<Storage, component_storage_t<Component>&>;
+    auto getStorage() -> enable_if_component<Component, component_storage_t<Component>&>;
 
 private:
     std::vector<uint32_t> versions_;
