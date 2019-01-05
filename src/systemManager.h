@@ -5,10 +5,12 @@
 #ifndef ENTTX_SYSTEMMANAGER_H
 #define ENTTX_SYSTEMMANAGER_H
 
+#include "baseSystem.h"
 #include "config.h"
 #include <boost/cstdfloat.hpp>
 #include <cstddef>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 
 namespace enttx {
@@ -26,7 +28,9 @@ public:
     template<typename S, typename R = void>
     using enable_if_system = std::enable_if_t<system_list_t ::template has_type<S>::value, R>;
 
-public:
+    template<class EntityManager>
+    explicit SystemManager(EntityManager* entityManager);
+
     template<typename System>
     auto get() const -> enable_if_system<System, System const&>;
 
@@ -34,6 +38,12 @@ public:
     auto get() -> enable_if_system<System, System&>;
 
     void update(boost::float32_t dt);
+
+    SystemManager(SystemManager const&) = default;
+
+    SystemManager(SystemManager&&) = default;
+
+    ~SystemManager() = default;
 
 private:
     template<size_t STAGE, typename System>
@@ -48,6 +58,13 @@ private:
 private:
     std::tuple<Systems...> systems_;
 };
+
+template<typename... Systems>
+template<class EntityManager>
+void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, easy_mp::type_list<Systems...>>>::SystemManager(
+  EntityManager* entityManager)
+  : systems_{ Systems(entityManager)... }
+{}
 
 template<typename... Systems>
 void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, easy_mp::type_list<Systems...>>>::update(boost::float32_t dt)
