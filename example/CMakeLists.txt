@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(enttx.test VERSION 0.0.0.0)
+project(enttx.example VERSION 0.0.0.0)
 
 set(SOURCE_FILES
     components/transform.h
