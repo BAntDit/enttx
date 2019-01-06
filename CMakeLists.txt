@@ -5,7 +5,7 @@ include(CMakePackageConfigHelpers)
 
 project(enttx VERSION 0.0.0.0)
 
-set(PUBLIC_HEADERS
+set(INTERFACE_HEADERS
     src/config.h
     src/entity.h
     src/entityManager.h
@@ -15,7 +15,13 @@ set(PUBLIC_HEADERS
     src/systemManager.h
 )
 
-add_library(enttx INTERFACE)
+set(FULL_PATH_INTERFACE_HEADERS "")
+foreach(source ${INTERFACE_HEADERS})
+    list(APPEND FULL_PATH_INTERFACE_HEADERS "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${source}>")
+endforeach()
+
+add_library(${PROJECT_NAME} INTERFACE)
+target_sources(${PROJECT_NAME} INTERFACE ${FULL_PATH_INTERFACE_HEADERS})
 
 target_include_directories(
     ${PROJECT_NAME} INTERFACE
@@ -29,12 +35,12 @@ find_package(Boost REQUIRED)
 
 add_subdirectory("example")
 
-set(ALL_SOURCES_FOR_STYLE_CORRECTION ${PUBLIC_HEADERS})
+set(ALL_SOURCES_FOR_STYLE_CORRECTION ${INTERFACE_HEADERS})
 
 include(ClangFormat.cmake)
 CODE_STYLE_CORRECTION("${ALL_SOURCES_FOR_STYLE_CORRECTION}")
 
-foreach (header ${PUBLIC_HEADERS})
+foreach (header ${INTERFACE_HEADERS})
     install(
         FILES ${header}
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
