@@ -12,6 +12,8 @@
 #include "baseComponentStorage.h"
 
 namespace enttx {
+// TODO:: better storage with view, iterators, size and capacity
+
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
 class ComponentStorage
   : public BaseComponentStorage<ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>, Component>
