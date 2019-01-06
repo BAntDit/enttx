@@ -100,6 +100,15 @@ public:
     public:
         using filter_component_list_t = easy_mp::type_list<FilterComponents...>;
 
+        View(View const&) = delete;
+
+        View(View&&) = default;
+
+        ~View() = default;
+
+        auto operator=(View const&) -> View& = delete;
+        auto operator=(View&&) -> View& = delete;
+
         class Iterator
         {
         public:
@@ -108,6 +117,15 @@ public:
             using difference_type = uint32_t;
             using pointer = Entity*;
             using reference = Entity&;
+
+            Iterator(Iterator const&) = delete;
+
+            Iterator(Iterator&&) = default;
+
+            ~Iterator() = default;
+
+            auto operator=(Iterator const&) -> Iterator& = delete;
+            auto operator=(Iterator&&) -> Iterator& = delete;
 
             auto operator++() -> Iterator&;
 
@@ -136,7 +154,13 @@ public:
             EntityManager<config_t> const& entityManager_;
         };
 
-        auto begin() const -> Iterator { return Iterator(entityManager_, filter_, 0); }
+        auto begin() const -> Iterator {
+            Iterator iterator{ entityManager_, filter_, 0};
+
+            iterator.next();
+
+            return iterator;
+        }
 
         auto end() const -> Iterator
         {
