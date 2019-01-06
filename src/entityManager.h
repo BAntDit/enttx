@@ -7,6 +7,7 @@
 
 #include <assert.h>
 #include <cstdint>
+#include <iterator>
 #include <tuple>
 #include <vector>
 
@@ -23,6 +24,8 @@ class EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_
 public:
     using config_t = EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>;
 
+    using component_mask_t = typename config_t::component_mask_t;
+
     using component_list_t = typename config_t::component_list_t;
 
     using storage_list_t = typename config_t::storage_list_t;
@@ -30,9 +33,10 @@ public:
     template<typename C, typename R = void>
     using enable_if_component = std::enable_if_t<component_list_t::template has_type<C>::value, R>;
 
-    template<typename R, typename... Cs>
+    template<typename R, typename... RequestedComponents>
     using enable_if_components = std::enable_if_t<
-      std::is_same_v<easy_mp::inner_join<component_list_t, easy_mp::type_list<Cs...>>, easy_mp::type_list<Cs...>>,
+      std::is_same_v<typename easy_mp::inner_join<component_list_t, easy_mp::type_list<RequestedComponents...>>::type,
+                     easy_mp::type_list<RequestedComponents...>>,
       R>;
 
     template<typename C>
@@ -90,11 +94,80 @@ public:
     template<typename Component>
     auto getStorage() -> enable_if_component<Component, component_storage_t<Component>&>;
 
+    template<typename... FilterComponents>
+    class View
+    {
+    public:
+        using filter_component_list_t = easy_mp::type_list<FilterComponents...>;
+
+        class Iterator
+        {
+        public:
+            using iterator_category = std::input_iterator_tag;
+            using value_type = Entity;
+            using difference_type = uint32_t;
+            using pointer = Entity*;
+            using reference = Entity&;
+
+            auto operator++() -> Iterator&;
+
+            auto operator==(Iterator const& rhs) const -> bool { return cursor_ == rhs.cursor_; }
+            auto operator!=(Iterator const& rhs) const -> bool { return cursor_ != rhs.cursor_; }
+
+            auto operator*() const -> Entity;
+
+        private:
+            friend class View<FilterComponents...>;
+
+            Iterator(EntityManager<config_t> const& entityManager, component_mask_t filter, cursor)
+              : cursor_{ cursor }
+              , capacity_{ entityManager.capacity() }
+              , filter_{ filter }
+              , entityManager_{ entityManager }
+            {}
+
+            void next();
+
+            uint32_t cursor_;
+            size_t capacity_;
+
+            component_mask_t filter_;
+
+            EntityManager<config_t> const& entityManager_;
+        };
+
+        auto begin() const -> Iterator { return Iterator(entityManager_, filter_, 0); }
+
+        auto end() const -> Iterator
+        {
+            return Iterator(entityManager_, filter_, static_cast<uint32_t>(entityManager_.capacity()));
+        }
+
+    private:
+        friend class EntityManager<config_t>;
+
+        explicit View(EntityManager<config_t> const& entityManager)
+          : entityManager_{ entityManager }
+          , filter_{}
+        {
+            static_assert(std::is_same_v<typename easy_mp::inner_join<component_list_t, filter_component_list_t>::type,
+                                         filter_component_list_t>);
+
+            (filter_.set(component_list_t::template get_type_index<FilterComponents>::value), ...);
+        }
+
+        EntityManager<config_t> const& entityManager_;
+
+        component_mask_t filter_;
+    };
+
+    template<typename... FilterComponents>
+    auto getView() const -> View<FilterComponents...>;
+
 private:
     std::vector<uint32_t> versions_;
     std::vector<uint32_t> dump_;
-
-    std::vector<typename config_t::component_mask_t> masks_;
+    std::vector<component_mask_t> masks_;
 
     std::tuple<Storages...> storage_;
 };
@@ -304,6 +377,46 @@ auto EntityManager<
   -> enable_if_component<Component, component_storage_t<Component>&>
 {
     return const_cast<component_storage_t<Component>&>(std::as_const(this)->template getStorage<Component>());
+}
+
+template<typename... Components, typename... Storages>
+template<typename... FilterComponents>
+void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::View<
+  FilterComponents...>::Iterator::next()
+{
+    while (cursor_ < capacity_ && (entityManager_.mask_[cursor_] & filter_) != filter_) {
+        cursor_++;
+    }
+}
+
+template<typename... Components, typename... Storages>
+template<typename... FilterComponents>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::View<
+  FilterComponents...>::Iterator::operator++()
+  -> EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::View<
+    FilterComponents...>::Iterator&
+{
+    cursor_++;
+    next();
+    return *this;
+}
+
+template<typename... Components, typename... Storages>
+template<typename... FilterComponents>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::View<
+  FilterComponents...>::Iterator::operator*() const -> Entity
+{
+    return Entity{ cursor_, entityManager_.versions_[cursor_] };
+}
+
+template<typename... Components, typename... Storages>
+template<typename... FilterComponents>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getView()
+  const -> EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::View<
+    FilterComponents...>
+{
+    return EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::View<
+      FilterComponents...>{ *this };
 }
 }
 
