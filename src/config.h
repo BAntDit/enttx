@@ -25,17 +25,19 @@ struct EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list
     using component_mask_t = std::bitset<component_list_t::size>;
 };
 
-template<size_t UPDATE_STAGE_COUNT, typename SystemList>
+template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename SystemList>
 struct SystemManagerConfig;
 
-template<size_t UPDATE_STAGE_COUNT, typename... Systems>
-struct SystemManagerConfig<UPDATE_STAGE_COUNT, easy_mp::type_list<Systems...>>
+template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
+struct SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>
 {
     static constexpr size_t updateStageCount = UPDATE_STAGE_COUNT;
 
     static constexpr size_t systemCount = sizeof...(Systems);
 
     using system_list_t = easy_mp::type_list<Systems...>;
+
+    using entity_manager_config_t = EntityManagerConfig;
 };
 }
 
