@@ -136,8 +136,9 @@ public:
             EntityManager<config_t> const& entityManager_;
         };
 
-        auto begin() const -> Iterator {
-            Iterator iterator{ entityManager_, filter_, 0};
+        auto begin() const -> Iterator
+        {
+            Iterator iterator{ entityManager_, filter_, 0 };
 
             iterator.next();
 
