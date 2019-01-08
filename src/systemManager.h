@@ -55,7 +55,7 @@ private:
 };
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
-void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
+SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
   SystemManager(EntityManager<EntityManagerConfig>* entities)
   : entities_{ entities }
   , systems_{ Systems()... }
@@ -65,7 +65,7 @@ template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Sy
 void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
   update(boost::float32_t dt)
 {
-    _updateStages(dt, std::make_index_sequence(UPDATE_STAGE_COUNT));
+    _updateStages(dt, std::make_index_sequence<UPDATE_STAGE_COUNT>{});
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
