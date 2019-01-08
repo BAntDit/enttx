@@ -8,12 +8,15 @@ set(SOURCE_FILES
     components/directionalLight.h
     systems/transformSystem.h
     app.h
+    example.cpp
     example.h
     options.h
     options.cpp
     main.cpp
     updateStages.h
     configuration.h
+    systems/cameraSystem.h
+    systems/directionalLightSystem.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

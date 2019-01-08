@@ -8,7 +8,12 @@
 class Options
 {
 public:
-    Options(int argc = 0, const char* argv[] = {});
+    explicit Options(int argc = 0, const char* argv[] = {});
+
+    auto initialEntitiesCount() const -> size_t { return initialEntitiesCount_; }
+
+private:
+    size_t initialEntitiesCount_;
 };
 
 #endif //ENTTX_OPTIONS_H

@@ -17,6 +17,8 @@ struct Camera {
     glm::tmat4x4<boost::float32_t, glm::highp>  viewMatrix;
     glm::tmat4x4<boost::float32_t, glm::highp>  projectionMatrix;
     glm::tmat4x4<boost::float32_t, glm::highp>  viewProjectionMatrix;
+
+    bool projectionUpdate;
 };
 
 #endif //ENTTX_CAMERA_H

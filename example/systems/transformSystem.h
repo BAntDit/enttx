@@ -25,21 +25,19 @@ void TransformSystem::update(EntityManager* entityManager, boost::float32_t dt)
     auto entities = entityManager->template getView<Transform>();
 
     for(auto&& entity : entities) {
-        auto* transform = entityManager->template getComponent<Transform>();
-
-        assert(transform != nullptr);
+        auto& transform = *entityManager->template getComponent<Transform>();
 
         if constexpr (STAGE == UPDATE_STAGES::EARLY_UPDATE_STAGE) {
-            if (transform->matrixUpdate) {
-                transform->matrix =
-                        glm::translate(transform->position) *
-                        glm::toMat4(transform->orientation) *
-                        glm::scale(transform->scale); // TRS
+            if (transform.matrixUpdate) {
+                transform.matrix =
+                        glm::translate(transform.position) *
+                        glm::toMat4(transform.orientation) *
+                        glm::scale(transform.scale); // TRS
             }
         }
 
         if constexpr (STAGE == UPDATE_STAGES::LATE_UPDATE_STAGE) {
-            transform->matrixUpdate = false;
+            transform.matrixUpdate = false;
         }
     }
 }
