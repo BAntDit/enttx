@@ -14,7 +14,8 @@ struct Transform {
     glm::tvec3<boost::float32_t, glm::highp>    scale;
     glm::tquat<boost::float32_t, glm::highp>    orientation;
     glm::tmat4x4<boost::float32_t, glm::highp>  matrix;
-    glm::tmat4x4<boost::float32_t, glm::highp>  worldMatrix;
+
+    bool matrixUpdate;
 };
 
 #endif //ENTTX_TRANSFORM_H
