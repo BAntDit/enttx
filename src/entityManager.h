@@ -41,7 +41,7 @@ public:
 
     template<typename C>
     using component_storage_t =
-      typename storage_list_t::template get_type<component_list_t::template get_type_index<Component>::value>::type;
+      typename storage_list_t::template get_type<component_list_t::template get_type_index<C>::value>::type;
 
     explicit EntityManager(size_t initialSize = 10000);
 
@@ -119,7 +119,7 @@ public:
         private:
             friend class View<FilterComponents...>;
 
-            Iterator(EntityManager<config_t> const& entityManager, component_mask_t filter, cursor)
+            Iterator(EntityManager<config_t> const& entityManager, component_mask_t filter, uint32_t cursor)
               : cursor_{ cursor }
               , capacity_{ entityManager.capacity() }
               , filter_{ filter }
