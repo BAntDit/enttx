@@ -97,6 +97,30 @@ entityManager.hasComponents<Camera, Transform>(entity); // return bitset
  }
  ```
 
+ // or to get direct access to component's storage
+
+ ```cpp
+ auto storage = entityManager.getStorage<Camera>(); // storage of camera's components
+ ```
+
+5. to apply changes for any components of entity:
+
+```cpp
+auto fn = [](auto&& component) -> void {
+    if constexpr (std::is_same_v<std::decay_t<decltype(component)>, Camera>) {
+        // do this...
+    }
+
+    if constexpr (std::is_same_v<std::decay_t<decltype(component)>, DirectionalLight>) {
+        // do that...
+    }
+};
+
+entityManager.applyForComponents<Camera, DirectionalLight>(entity, fn);
+```
+
+ ### systems management
+
 
 
 
