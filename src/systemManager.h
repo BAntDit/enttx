@@ -106,7 +106,7 @@ template<typename System>
 auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::get()
   -> enable_if_system<System, System&>
 {
-    return const_cast<System&>(std::as_const(this)->template get<System>());
+    return std::get<system_list_t::template get_type_index<System>::value>(systems_);
 }
 }
 
