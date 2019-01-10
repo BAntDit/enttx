@@ -17,7 +17,7 @@ public:
 
     auto init(Options const& options) -> Example&;
 
-    auto run() -> Example& { return *this; }
+    auto run() -> Example&;
 
     void done() { }
 
