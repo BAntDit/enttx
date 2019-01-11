@@ -12,13 +12,10 @@
 #include "baseComponentStorage.h"
 
 namespace enttx {
-// TODO:: better storage with view, iterators, size and capacity
-
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
 class ComponentStorage
   : public BaseComponentStorage<ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>, Component>
 {
-public:
     ComponentStorage();
 
     auto get(uint32_t index) const -> Component const&;
@@ -33,6 +30,14 @@ public:
     auto capacity() const -> size_t { return store_.capacity(); }
 
     auto size() const -> size_t { return store_.size(); }
+
+    auto begin() const { return store_.cbegin(); }
+
+    auto end() const { return store_.cend(); }
+
+    auto begin() { return store_.begin(); }
+
+    auto end() { return store_.end(); }
 
 private:
     void _reserveStoreIfNecessary(uint32_t pos);
@@ -82,9 +87,8 @@ template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
 template<typename... Args>
 auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32_t index, Args&&... args) -> Component&
 {
-    assert(index != maxValidIndex_
-      || index >= indices_.size()
-      || indices_[index] == std::numeric_limits<uint32_t>::max());
+    assert(index != maxValidIndex_ || index >= indices_.size() ||
+           indices_[index] == std::numeric_limits<uint32_t>::max());
 
     if (maxValidIndex_ == std::numeric_limits<uint32_t>::max()) {
         uint32_t pos = 0;
@@ -120,7 +124,8 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
         auto pos = std::numeric_limits<uint32_t>::max();
 
         for (auto it = std::next(indices_.begin(), index); it != std::next(maxValidIndex_, maxValidIndex_ + 1); it++) {
-            if (*it == std::numeric_limits<uint32_t>::max()) continue;
+            if (*it == std::numeric_limits<uint32_t>::max())
+                continue;
 
             if (pos == std::numeric_limits<uint32_t>::max()) {
                 pos = *it;
@@ -148,11 +153,23 @@ void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::destroy(uint3
 
     indices_[index] = std::numeric_limits<uint32_t>::max();
 
-    // TODO:: ...
+    uint32_t lastValidIndex = std::numeric_limits<uint32_t>::max();
+
+    for (auto it = std::next(indices_.begin(), index); it != std::next(indices_.begin(), maxValidIndex_ + 1); it++) {
+        if (*it == std::numeric_limits<uint32_t>::max())
+            continue;
+
+        (*it)--;
+
+        lastValidIndex = static_cast<uint32_t>(std::distance(indices_.begin(), it));
+    }
+
+    maxValidIndex_ = lastValidIndex;
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
-void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::_reserveStoreIfNecessary(uint32_t pos) {
+void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::_reserveStoreIfNecessary(uint32_t pos)
+{
     auto capacity = store_.capacity();
 
     if (pos >= capacity) {
@@ -164,7 +181,8 @@ void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::_reserveStore
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
-void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::_resizeIndicesIfNecessary(uint32_t index) {
+void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::_resizeIndicesIfNecessary(uint32_t index)
+{
     auto size = indices_.size();
 
     if (index >= size) {

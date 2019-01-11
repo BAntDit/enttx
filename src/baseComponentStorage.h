@@ -23,13 +23,17 @@ public:
 
     void destroy(uint32_t index);
 
-    void resize(size_t chunkCount);
+    auto capacity() const -> size_t;
 
-    void reset();
+    auto size() const -> size_t;
 
-    auto data() const -> std::pair<Component const*, size_t>;
+    auto begin() const;
 
-    auto data() -> std::pair<Component*, size_t>;
+    auto end() const;
+
+    auto begin();
+
+    auto end();
 };
 
 template<typename Derived, typename Component>
@@ -58,27 +62,39 @@ void BaseComponentStorage<Derived, Component>::destroy(uint32_t index)
 }
 
 template<class Derived, typename Component>
-void BaseComponentStorage<Derived, Component>::resize(size_t chunkCount)
+auto BaseComponentStorage<Derived, Component>::capacity() const -> size_t
 {
-    static_cast<Derived*>(this)->resize(chunkCount);
+    return static_cast<Derived const*>(this)->capacity();
 }
 
 template<class Derived, typename Component>
-void BaseComponentStorage<Derived, Component>::reset()
+auto BaseComponentStorage<Derived, Component>::size() const -> size_t
 {
-    static_cast<Derived*>(this)->reset();
+    return static_cast<Derived const*>(this)->size();
 }
 
 template<class Derived, typename Component>
-auto BaseComponentStorage<Derived, Component>::data() const -> std::pair<Component const*, size_t>
+auto BaseComponentStorage<Derived, Component>::begin() const
 {
-    return static_cast<Derived const*>(this)->data();
+    return static_cast<Derived const*>(this)->begin();
 }
 
 template<class Derived, typename Component>
-auto BaseComponentStorage<Derived, Component>::data() -> std::pair<Component*, size_t>
+auto BaseComponentStorage<Derived, Component>::end() const
 {
-    return static_cast<Derived*>(this)->data();
+    return static_cast<Derived const*>(this)->end();
+}
+
+template<class Derived, typename Component>
+auto BaseComponentStorage<Derived, Component>::begin()
+{
+    return static_cast<Derived*>(this)->begin();
+}
+
+template<class Derived, typename Component>
+auto BaseComponentStorage<Derived, Component>::end()
+{
+    return static_cast<Derived*>(this)->end();
 }
 }
 
