@@ -30,19 +30,15 @@ public:
 
     void destroy(uint32_t index);
 
-    void resize(size_t chunkCount);
-
-    void reset();
-
-    auto data() const -> std::pair<Component const*, size_t>;
-
-    auto data() -> std::pair<Component*, size_t>;
-
     auto capacity() const -> size_t { return store_.capacity(); }
 
     auto size() const -> size_t { return store_.size(); }
 
 private:
+    void _reserveStoreIfNecessary(uint32_t pos);
+
+    void _resizeIndicesIfNecessary(uint32_t index);
+
     std::vector<uint32_t> indices_;
     std::vector<Component> store_;
 
@@ -63,11 +59,11 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::get(uint32_t 
 {
     assert(index < indices_.size());
 
-    auto index_ = indices_[index];
+    auto pos = indices_[index];
 
-    assert(index_ < store_.size());
+    assert(pos < store_.size());
 
-    return store_[index_];
+    return store_[pos];
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
@@ -75,96 +71,108 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::get(uint32_t 
 {
     assert(index < indices_.size());
 
-    auto index_ = indices_[index];
+    auto pos = indices_[index];
 
-    assert(index_ < store_.size());
+    assert(pos < store_.size());
 
-    return store_[index_];
+    return store_[pos];
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
 template<typename... Args>
 auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32_t index, Args&&... args) -> Component&
 {
-    // TODO:: ...
+    assert(index != maxValidIndex_
+      || index >= indices_.size()
+      || indices_[index] == std::numeric_limits<uint32_t>::max());
 
-    {
-        auto size = indices_.size();
+    if (maxValidIndex_ == std::numeric_limits<uint32_t>::max()) {
+        uint32_t pos = 0;
 
-        if (index >= size) {
+        maxValidIndex_ = index;
 
-            size = index + 1;
-            size = size + CHUNK_SIZE - size % CHUNK_SIZE;
+        _resizeIndicesIfNecessary(index);
 
-            indices_.resize(size, std::numeric_limits<uint32_t>::max());
-        }
-    }
+        indices_[index] = pos;
 
-    uint32_t pos = indices_[index];
+        _reserveStoreIfNecessary(pos);
 
-    if (pos == std::numeric_limits<uint32_t>::max()) {
-        for (auto it = indices_.begin(); it != indices_.end(); it++) {
+        store_.emplace(store_.cbegin(), std::forward<Args>(args)...);
+    } else if (index > maxValidIndex_) {
+        auto pos = indices_[maxValidIndex_];
+
+        maxValidIndex_ = index;
+
+        assert(pos < store_.size());
+
+        _resizeIndicesIfNecessary(index);
+
+        indices_[index] = ++pos;
+
+        _reserveStoreIfNecessary(pos);
+
+        store_.emplace(std::next(store_.cbegin(), pos), std::forward<Args>(args)...);
+    } else {
+        assert(indices_[maxValidIndex_] < store_.size());
+
+        _reserveStoreIfNecessary(indices_[maxValidIndex_] + 1);
+
+        auto pos = std::numeric_limits<uint32_t>::max();
+
+        for (auto it = std::next(indices_.begin(), index); it != std::next(maxValidIndex_, maxValidIndex_ + 1); it++) {
             if (*it == std::numeric_limits<uint32_t>::max()) continue;
 
-            auto distance = std::distance(indices_.begin(), it);
-
-            if (distance < index) {
-                if (pos == std::numeric_limits<uint32_t>::max()) {
-                    pos = *it + 1;
-                }
-            } else {
-                if (pos == std::numeric_limits<uint32_t>::max()) {
-                    pos = *it;
-                }
-
-                (*it)++;
+            if (pos == std::numeric_limits<uint32_t>::max()) {
+                pos = *it;
             }
+
+            (*it)++;
         }
+
+        assert(pos < store_.size());
+
+        store_.emplace(std::next(store_.cbegin(), pos), std::forward<Args>(args)...);
     }
-
-    indices_[index] = pos != std::numeric_limits<uint32_t>::max() ? pos : pos = 0;
-
-    {
-        auto capacity = store_.capacity();
-
-        if (pos >= store_.capacity()) {
-            // pos =
-        }
-    }
-
-    return *(new (get(index)) Component(std::forward<Args>(args)...));
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
 void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::destroy(uint32_t index)
 {
-    assert(index < store_.size() * CHUNK_SIZE);
+    assert(indices_[index] != std::numeric_limits<uint32_t>::max());
 
-    get(index)->~Component();
+    auto pos = indices_[index];
+
+    assert(pos < store_.size());
+
+    store_.erase(std::next(store_.cbegin(), pos));
+
+    indices_[index] = std::numeric_limits<uint32_t>::max();
+
+    // TODO:: ...
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
-void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::resize(size_t chunkCount)
-{
-    store_.resize(chunkCount);
+void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::_reserveStoreIfNecessary(uint32_t pos) {
+    auto capacity = store_.capacity();
+
+    if (pos >= capacity) {
+        capacity = pos + 1;
+        capacity = capacity + CHUNK_SIZE - capacity % CHUNK_SIZE;
+
+        store_.reserve(capacity);
+    }
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
-void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::reset()
-{
-    store_.resize(0);
-}
+void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::_resizeIndicesIfNecessary(uint32_t index) {
+    auto size = indices_.size();
 
-template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
-auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::data() const -> std::pair<Component const*, size_t>
-{
-    return { static_cast<Component const*>(store_.data()), store_.data() * CHUNK_SIZE };
-}
+    if (index >= size) {
+        size = index + 1;
+        size = size + CHUNK_SIZE - size % CHUNK_SIZE;
 
-template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
-auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::data() -> std::pair<Component*, size_t>
-{
-    return { static_cast<Component*>(store_.data()), store_.data() * CHUNK_SIZE };
+        indices_.resize(size, std::numeric_limits<uint32_t>::max());
+    }
 }
 }
 
