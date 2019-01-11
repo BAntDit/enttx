@@ -5,6 +5,8 @@ include(CMakePackageConfigHelpers)
 
 project(enttx VERSION 0.0.0.0)
 
+option(TESTS "whether needs to build tests" ON)
+
 set(INTERFACE_HEADERS
     src/config.h
     src/entity.h
@@ -34,6 +36,16 @@ find_package(easy-mp REQUIRED)
 find_package(Boost REQUIRED)
 
 add_subdirectory("example")
+
+if (TESTS)
+
+    find_package(GTest REQUIRED)
+
+    enable_testing()
+
+    add_subdirectory("tests")
+
+endif()
 
 set(ALL_SOURCES_FOR_STYLE_CORRECTION ${INTERFACE_HEADERS})
 
