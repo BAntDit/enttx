@@ -5,7 +5,7 @@
 #ifndef ENTTX_ENTITYMANAGER_H
 #define ENTTX_ENTITYMANAGER_H
 
-#include <assert.h>
+#include <cassert>
 #include <cstdint>
 #include <iterator>
 #include <tuple>
@@ -50,6 +50,12 @@ public:
     auto capacity() const -> size_t;
 
     auto create() -> Entity;
+
+    template<uint32_t COUNT>
+    auto createMany(std::array<Entity, COUNT>& entities) -> std::array<Entity, COUNT>&;
+
+    template<uint32_t COUNT>
+    auto createMany(std::array<Entity, COUNT>&& entities) -> std::array<Entity, COUNT>&&;
 
     void destroy(Entity const& entity);
 
@@ -226,6 +232,63 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
     }
 
     return Entity{ index, version };
+}
+
+template<typename... Components, typename... Storages>
+template<uint32_t COUNT>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
+  std::array<Entity, COUNT>& entities) -> std::array<Entity, COUNT>&
+{
+    uint32_t counter = 0;
+
+    uint32_t index = 0;
+    uint32_t version = 0;
+
+    while (counter < COUNT && !dump_.empty()) {
+        index = dump_.back();
+
+        dump_.pop_back();
+
+        version = versions_[index];
+
+        entities[counter++] = Entity{ index, version };
+
+        counter++;
+    }
+
+    {
+        uint32_t left = COUNT - counter;
+        uint32_t size = versions_.size();
+        uint32_t capacity = versions_.capacity();
+
+        if (size + left > capacity) {
+            capacity = size + left;
+
+            versions_.reserve(capacity);
+            masks_.reserve(capacity);
+            dump_.reserve(capacity);
+        }
+    }
+
+    while (counter < COUNT) {
+        index = versions_.size();
+        version = 1;
+
+        versions_.emplace_back(version);
+        masks_.emplace_back();
+
+        entities[counter++] = Entity{ index, version };
+    }
+
+    return entities;
+}
+
+template<typename... Components, typename... Storages>
+template<uint32_t COUNT>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
+  std::array<Entity, COUNT>&& entities) -> std::array<Entity, COUNT>&&
+{
+    return std::move(createMany(entities));
 }
 
 template<typename... Components, typename... Storages>
