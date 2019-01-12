@@ -16,6 +16,7 @@ template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
 class ComponentStorage
   : public BaseComponentStorage<ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>, Component>
 {
+public:
     ComponentStorage();
 
     auto get(uint32_t index) const -> Component const&;
@@ -123,7 +124,8 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
 
         auto pos = std::numeric_limits<uint32_t>::max();
 
-        for (auto it = std::next(indices_.begin(), index); it != std::next(maxValidIndex_, maxValidIndex_ + 1); it++) {
+        for (auto it = std::next(indices_.begin(), index); it != std::next(indices_.begin(), maxValidIndex_ + 1);
+             it++) {
             if (*it == std::numeric_limits<uint32_t>::max())
                 continue;
 
