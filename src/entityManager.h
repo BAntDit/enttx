@@ -454,8 +454,16 @@ template<typename... FilterComponents>
 void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::View<
   FilterComponents...>::Iterator::next()
 {
-    while (cursor_ < capacity_ && (entityManager_.mask_[cursor_] & filter_) != filter_) {
-        cursor_++;
+    if constexpr (sizeof...(FilterComponents) != 0) {
+        while (cursor_ < capacity_ && (entityManager_.mask_[cursor_] & filter_) != filter_) {
+            cursor_++;
+        }
+    }
+
+    if constexpr (sizeof...(FilterComponents) == 0) {
+        while (cursor_ < capacity_ && entityManager_.mask_[cursor_].any()) {
+            cursor_++;
+        }
     }
 }
 
