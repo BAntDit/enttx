@@ -7,13 +7,14 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 
 namespace enttx {
 class Entity
 {
 public:
     Entity()
-      : id_{ 0 }
+      : id_{ std::numeric_limits<uint64_t>::max() }
     {}
 
     explicit Entity(uint64_t id)
