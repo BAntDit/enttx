@@ -461,7 +461,7 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
     }
 
     if constexpr (sizeof...(FilterComponents) == 0) {
-        while (cursor_ < capacity_ && entityManager_.mask_[cursor_].any()) {
+        while (cursor_ < capacity_ && entityManager_.mask_[cursor_].none()) {
             cursor_++;
         }
     }
