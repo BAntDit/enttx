@@ -6,7 +6,7 @@
 #define ENTTX_COMPONENTSTORAGE_H
 
 #include <array>
-#include <assert.h>
+#include <cassert>
 #include <vector>
 
 #include "baseComponentStorage.h"
