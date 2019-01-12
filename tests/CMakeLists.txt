@@ -3,10 +3,14 @@ cmake_minimum_required(VERSION 3.10)
 
 project("enttx.test")
 
-add_executable(${PROJECT_NAME}
+set(SOURCES
     configuration.h
+    test.h
     test.cpp
-        components/particle.h)
+
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 17
