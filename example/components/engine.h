@@ -5,20 +5,24 @@
 #ifndef ENTTX_CAMERA_H
 #define ENTTX_CAMERA_H
 
-#include <glm/glm.hpp>
 #include <boost/cstdfloat.hpp>
 
-struct Camera {
-    boost::float32_t zFar;
-    boost::float32_t zNear;
-    boost::float32_t yFov;
-    boost::float32_t aspect;
+struct Engine {
+    explicit Engine(
+        boost::float32_t _fuel = 0.0f,
+        boost::float32_t _mass = 0.0f,
+        boost::float32_t _force = 0.0f,
+        boost::float32_t _lifetime = 0.0f) :
+        fuel{ _fuel }
+        , mass{ _mass }
+        , force{ _force }
+        , lifetime{ _lifetime }
+    { }
 
-    glm::tmat4x4<boost::float32_t, glm::highp>  viewMatrix;
-    glm::tmat4x4<boost::float32_t, glm::highp>  projectionMatrix;
-    glm::tmat4x4<boost::float32_t, glm::highp>  viewProjectionMatrix;
-
-    bool projectionUpdate;
+    boost::float32_t fuel;
+    boost::float32_t mass;
+    boost::float32_t force;
+    boost::float32_t lifetime;
 };
 
 #endif //ENTTX_CAMERA_H

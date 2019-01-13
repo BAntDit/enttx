@@ -6,11 +6,8 @@
 #define ENTTX_CAMERASYSTEM_H
 
 #include "../../src/baseSystem.h"
-#include "../components/engine.h"
-#include "../components/missle.h"
-#include "../updateStages.h"
 
-class CameraSystem: public enttx::BaseSystem<CameraSystem>
+class GuidanceSystem: public enttx::BaseSystem<GuidanceSystem>
 {
 public:
     void init() { }
@@ -20,7 +17,7 @@ public:
 };
 
 template<typename EntityManager, size_t STAGE>
-void CameraSystem::update(EntityManager* entityManager, boost::float32_t dt)
+void GuidanceSystem::update(EntityManager* entityManager, boost::float32_t dt)
 {
 }
 

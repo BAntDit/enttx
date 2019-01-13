@@ -6,10 +6,8 @@
 #define ENTTX_TRANSFORMSYSTEM_H
 
 #include "../../src/baseSystem.h"
-#include "../components/missle.h"
-#include "../updateStages.h"
 
-class TransformSystem: public enttx::BaseSystem<TransformSystem> {
+class EngineSystem: public enttx::BaseSystem<EngineSystem> {
 public:
     void init() { }
 
@@ -18,28 +16,8 @@ public:
 };
 
 template<typename EntityManager, size_t STAGE>
-void TransformSystem::update(EntityManager* entityManager, boost::float32_t dt)
+void EngineSystem::update(EntityManager* entityManager, boost::float32_t dt)
 {
-    (void)dt;
-
-    auto entities = entityManager->template getView<Transform>();
-
-    for(auto&& entity : entities) {
-        auto& transform = *entityManager->template getComponent<Transform>();
-
-        if constexpr (STAGE == UPDATE_STAGES::EARLY_UPDATE_STAGE) {
-            if (transform.matrixUpdate) {
-                transform.matrix =
-                        glm::translate(transform.position) *
-                        glm::toMat4(transform.orientation) *
-                        glm::scale(transform.scale); // TRS
-            }
-        }
-
-        if constexpr (STAGE == UPDATE_STAGES::LATE_UPDATE_STAGE) {
-            transform.matrixUpdate = false;
-        }
-    }
 }
 
 #endif //ENTTX_TRANSFORMSYSTEM_H

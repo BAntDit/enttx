@@ -3,20 +3,19 @@ cmake_minimum_required(VERSION 3.10)
 project(enttx.example VERSION 0.0.0.0)
 
 set(SOURCE_FILES
-    components/transform.h
-    components/camera.h
-    components/directionalLight.h
-    systems/transformSystem.h
+    components/missile.h
+    components/engine.h
+    components/guidance.h
+    systems/engineSystem.h
+    systems/guidanceSystem.h
+    systems/kinematicsSystem.h
     app.h
     example.cpp
     example.h
     options.h
     options.cpp
     main.cpp
-    updateStages.h
-    configuration.h
-    systems/cameraSystem.h
-    systems/directionalLightSystem.h
+        configuration.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

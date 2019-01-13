@@ -4,7 +4,7 @@
 
 #include "test.h"
 
-void TestEntity(enttx::EntityManager<entity_manager_config_t> &entityManager)
+void CreateEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManager)
 {
     {
         auto entity = entityManager.create();
@@ -13,12 +13,28 @@ void TestEntity(enttx::EntityManager<entity_manager_config_t> &entityManager)
     }
 
     {
+         auto entities = entityManager.createMany(std::array<enttx::Entity, 10000>{});
+
+        // for (auto&& entity : entities) {
+        //    ASSERT_TRUE(entityManager.isValid(entity));
+        // }
+    }
+
+    /* {
+        auto entities = entityManager.createMany(std::vector<enttx::Entity>(100));
+
+        for (auto&& entity : entities) {
+            // ASSERT_TRUE(entityManager.isValid(entity));
+        }
+    } */
+
+    {
         enttx::Entity entity;
 
         ASSERT_FALSE(entityManager.isValid(entity));
     }
 }
 
-TEST_F(TestFixture, _TestEntity) {
-    TestEntity(*entities_);
+TEST_F(TestFixture, _CreateEntityTest) {
+    CreateEntityTest(*entities_);
 }

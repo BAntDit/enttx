@@ -8,8 +8,8 @@
 #include <glm/glm.hpp>
 #include <boost/cstdfloat.hpp>
 
-struct Missle {
-    explicit Missle(
+struct Missile {
+    explicit Missile(
         glm::tvec3<boost::float32_t, glm::highp> l = glm::tvec3<boost::float32_t, glm::highp>{0.0f},
         glm::tvec3<boost::float32_t, glm::highp> v = glm::tvec3<boost::float32_t, glm::highp>{0.0f},
         glm::tvec3<boost::float32_t, glm::highp> a = glm::tvec3<boost::float32_t, glm::highp>{0.0f},

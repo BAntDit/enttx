@@ -7,34 +7,33 @@
 
 #include "../src/config.h"
 #include "../src/componentStorage.h"
-#include "components/transform.h"
-#include "components/camera.h"
-#include "components/directionalLight.h"
-#include "systems/transformSystem.h"
-#include "systems/cameraSystem.h"
-#include "systems/directionalLightSystem.h"
-#include "updateStages.h"
+#include "components/missile.h"
+#include "components/engine.h"
+#include "components/guidance.h"
+#include "systems/engineSystem.h"
+#include "systems/guidanceSystem.h"
+#include "systems/kinematicsSystem.h"
 
 using entity_manager_config_t = enttx::EntityManagerConfig<
         easy_mp::type_list<
-                Transform,
-                Camera,
-                DirectionalLight
+                Engine,
+                Missile,
+                Guidance
             >,
         easy_mp::type_list<
-                enttx::ComponentStorage<16, 128, Transform>,
-                enttx::ComponentStorage<16, 128, Camera>,
-                enttx::ComponentStorage<16, 128, DirectionalLight>
+                enttx::ComponentStorage<16, 128, Engine>,
+                enttx::ComponentStorage<16, 128, Missile>,
+                enttx::ComponentStorage<16, 128, Guidance>
             >
     >;
 
 using system_manager_config_t = enttx::SystemManagerConfig<
-        UPDATE_STAGES::STAGE_COUNT,
+        1,
         entity_manager_config_t,
         easy_mp::type_list<
-                CameraSystem,
-                DirectionalLightSystem,
-                TransformSystem
+                GuidanceSystem,
+                EngineSystem,
+                KinematicsSystem
             >
     >;
 
