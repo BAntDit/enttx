@@ -65,9 +65,6 @@ public:
 
     auto isValid(Entity const& entity) const -> bool;
 
-    template<typename Component>
-    auto remove(Entity const& entity) -> enable_if_component<Component>;
-
     template<typename... Cs>
     void remove(Entity const& entity);
 
@@ -182,6 +179,9 @@ public:
     auto getView() const -> View<FilterComponents...>;
 
 private:
+    template<typename Component>
+    auto _remove(Entity const& entity) -> enable_if_component<Component>;
+
     template<typename Container>
     auto _createMany(Container&& entities, size_t count) -> Container&&;
 
@@ -346,7 +346,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Component>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::remove(
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::_remove(
   Entity const& entity) -> enable_if_component<Component>
 {
     assert(isValid(entity));
@@ -364,7 +364,7 @@ template<typename... Cs>
 void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::remove(
   Entity const& entity)
 {
-    (remove<Cs>(entity), ...);
+    (_remove<Cs>(entity), ...);
 }
 
 template<typename... Components, typename... Storages>
