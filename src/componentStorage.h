@@ -91,6 +91,8 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
     assert(index != maxValidIndex_ || index >= indices_.size() ||
            indices_[index] == std::numeric_limits<uint32_t>::max());
 
+    auto it = store_.end();
+
     if (maxValidIndex_ == std::numeric_limits<uint32_t>::max()) {
         uint32_t pos = 0;
 
@@ -102,7 +104,7 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
 
         _reserveStoreIfNecessary(pos);
 
-        store_.emplace(store_.cbegin(), std::forward<Args>(args)...);
+        it = store_.emplace(store_.cbegin(), std::forward<Args>(args)...);
     } else if (index > maxValidIndex_) {
         auto pos = indices_[maxValidIndex_];
 
@@ -116,7 +118,7 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
 
         _reserveStoreIfNecessary(pos);
 
-        store_.emplace(std::next(store_.cbegin(), pos), std::forward<Args>(args)...);
+        it = store_.emplace(std::next(store_.cbegin(), pos), std::forward<Args>(args)...);
     } else {
         assert(indices_[maxValidIndex_] < store_.size());
 
@@ -138,8 +140,12 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
 
         assert(pos < store_.size());
 
-        store_.emplace(std::next(store_.cbegin(), pos), std::forward<Args>(args)...);
+        it = store_.emplace(std::next(store_.cbegin(), pos), std::forward<Args>(args)...);
     }
+
+    assert(it != store_.end());
+
+    return *it;
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
