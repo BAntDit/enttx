@@ -51,10 +51,10 @@ public:
 
     auto create() -> Entity;
 
-    template<uint32_t COUNT>
+    template<size_t COUNT>
     auto createMany(std::array<Entity, COUNT>& entities) -> std::array<Entity, COUNT>&;
 
-    template<uint32_t COUNT>
+    template<size_t COUNT>
     auto createMany(std::array<Entity, COUNT>&& entities) -> std::array<Entity, COUNT>&&;
 
     void destroy(Entity const& entity);
@@ -235,11 +235,11 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 }
 
 template<typename... Components, typename... Storages>
-template<uint32_t COUNT>
+template<size_t COUNT>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
   std::array<Entity, COUNT>& entities) -> std::array<Entity, COUNT>&
 {
-    uint32_t counter = 0;
+    size_t counter = 0;
 
     uint32_t index = 0;
     uint32_t version = 0;
@@ -257,9 +257,9 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
     }
 
     {
-        uint32_t left = COUNT - counter;
-        uint32_t size = versions_.size();
-        uint32_t capacity = versions_.capacity();
+        size_t left = COUNT - counter;
+        size_t size = versions_.size();
+        size_t capacity = versions_.capacity();
 
         if (size + left > capacity) {
             capacity = size + left;
@@ -284,7 +284,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 }
 
 template<typename... Components, typename... Storages>
-template<uint32_t COUNT>
+template<size_t COUNT>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
   std::array<Entity, COUNT>&& entities) -> std::array<Entity, COUNT>&&
 {
