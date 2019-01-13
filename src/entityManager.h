@@ -52,10 +52,14 @@ public:
     auto create() -> Entity;
 
     template<size_t COUNT>
-    auto createMany(std::array<Entity, COUNT>& entities) -> std::array<Entity, COUNT>&;
+    auto createMany(std::array<Entity, COUNT>& entities, size_t count = 0) -> std::array<Entity, COUNT>&;
 
     template<size_t COUNT>
-    auto createMany(std::array<Entity, COUNT>&& entities) -> std::array<Entity, COUNT>&&;
+    auto createMany(std::array<Entity, COUNT>&& entities, size_t count = 0) -> std::array<Entity, COUNT>&&;
+
+    auto createMany(std::vector<Entity>& entities, size_t count = 0) -> std::vector<Entity>&;
+
+    auto createMany(std::vector<Entity>&& entities, size_t count = 0) -> std::vector<Entity>&&;
 
     void destroy(Entity const& entity);
 
@@ -178,6 +182,9 @@ public:
     auto getView() const -> View<FilterComponents...>;
 
 private:
+    template<typename Container>
+    auto _createMany(Container&& entities, size_t count) -> Container;
+
     std::vector<uint32_t> versions_;
     std::vector<uint32_t> dump_;
     std::vector<component_mask_t> masks_;
@@ -235,16 +242,18 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 }
 
 template<typename... Components, typename... Storages>
-template<size_t COUNT>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
-  std::array<Entity, COUNT>& entities) -> std::array<Entity, COUNT>&
+template<typename Container>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+  _createMany(Container&& entities, size_t count) -> Container
 {
+    assert(count <= entities.size());
+
     size_t counter = 0;
 
     uint32_t index = 0;
     uint32_t version = 0;
 
-    while (counter < COUNT && !dump_.empty()) {
+    while (counter < count && !dump_.empty()) {
         index = dump_.back();
 
         dump_.pop_back();
@@ -252,12 +261,10 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
         version = versions_[index];
 
         entities[counter++] = Entity{ index, version };
-
-        counter++;
     }
 
     {
-        size_t left = COUNT - counter;
+        size_t left = count - counter;
         size_t size = versions_.size();
         size_t capacity = versions_.capacity();
 
@@ -270,7 +277,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
         }
     }
 
-    while (counter < COUNT) {
+    while (counter < count) {
         index = versions_.size();
         version = 1;
 
@@ -280,15 +287,41 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
         entities[counter++] = Entity{ index, version };
     }
 
-    return entities;
+    return std::forward<Container>(entities);
 }
 
 template<typename... Components, typename... Storages>
 template<size_t COUNT>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
-  std::array<Entity, COUNT>&& entities) -> std::array<Entity, COUNT>&&
+  std::array<Entity, COUNT>& entities,
+  size_t count) -> std::array<Entity, COUNT>&
 {
-    return std::move(createMany(entities));
+    return _createMany(entities, count > 0 ? count : COUNT);
+}
+
+template<typename... Components, typename... Storages>
+template<size_t COUNT>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
+  std::array<Entity, COUNT>&& entities,
+  size_t count) -> std::array<Entity, COUNT>&&
+{
+    return std::move(_createMany(std::move(entities), count > 0 ? count : COUNT));
+}
+
+template<typename... Components, typename... Storages>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
+  std::vector<Entity>& entities,
+  size_t count) -> std::vector<Entity>&
+{
+    return _createMany(entities, count > 0 ? count : entities.size());
+}
+
+template<typename... Components, typename... Storages>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
+  std::vector<Entity>&& entities,
+  size_t count) -> std::vector<Entity>&&
+{
+    return std::move(_createMany(std::move(entities), count > 0 ? count : entities.size()));
 }
 
 template<typename... Components, typename... Storages>

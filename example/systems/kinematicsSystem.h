@@ -10,8 +10,8 @@
 #include <algorithm>
 
 #include "../../src/baseSystem.h"
-#include "../components/directionalLight.h"
-#include "../components/transform.h"
+#include "../components/guidance.h"
+#include "../components/missle.h"
 #include "../updateStages.h"
 
 class DirectionalLightSystem: public enttx::BaseSystem<DirectionalLightSystem>

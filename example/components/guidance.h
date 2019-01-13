@@ -5,14 +5,15 @@
 #ifndef ENTTX_DIRECTIONALLIGHT_H
 #define ENTTX_DIRECTIONALLIGHT_H
 
-#include <glm/glm.hpp>
 #include <boost/cstdfloat.hpp>
 
-struct DirectionalLight
+struct Payload
 {
-    boost::float32_t temperature;
-    boost::float32_t illuminance;
-    glm::tvec3<boost::float32_t, glm::highp> direction;
+    explicit Payload(boost::float32_t m = 0.0f) :
+        mass{ m }
+    { }
+
+    boost::float32_t mass;
 };
 
 #endif //ENTTX_DIRECTIONALLIGHT_H
