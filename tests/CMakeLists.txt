@@ -7,8 +7,7 @@ set(SOURCES
     configuration.h
     test.h
     test.cpp
-
-        testSystem.h)
+    testSystem.h)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
