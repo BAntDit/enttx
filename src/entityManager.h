@@ -216,7 +216,7 @@ template<typename... Components, typename... Storages>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::capacity()
   const -> size_t
 {
-    return versions_.capacity();
+    return versions_.size();
 }
 
 template<typename... Components, typename... Storages>
@@ -391,7 +391,8 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
     assert(isValid(entity));
 
     return masks_[entity.index()].test(component_list_t::template get_type_index<Component>::value)
-             ? &(std::get<component_list_t::template get_type_index<Component>::value>(storage_).template get(entity.index()))
+             ? &(std::get<component_list_t::template get_type_index<Component>::value>(storage_).template get(
+                 entity.index()))
              : nullptr;
 }
 
