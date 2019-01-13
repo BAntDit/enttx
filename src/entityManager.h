@@ -183,7 +183,7 @@ public:
 
 private:
     template<typename Container>
-    auto _createMany(Container&& entities, size_t count) -> Container;
+    auto _createMany(Container&& entities, size_t count) -> Container&&;
 
     std::vector<uint32_t> versions_;
     std::vector<uint32_t> dump_;
@@ -244,7 +244,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename Container>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  _createMany(Container&& entities, size_t count) -> Container
+  _createMany(Container&& entities, size_t count) -> Container&&
 {
     assert(count <= entities.size());
 
@@ -305,7 +305,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
   std::array<Entity, COUNT>&& entities,
   size_t count) -> std::array<Entity, COUNT>&&
 {
-    return std::move(_createMany(std::move(entities), count > 0 ? count : COUNT));
+    return _createMany(std::move(entities), count > 0 ? count : COUNT);
 }
 
 template<typename... Components, typename... Storages>
@@ -321,7 +321,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
   std::vector<Entity>&& entities,
   size_t count) -> std::vector<Entity>&&
 {
-    return std::move(_createMany(std::move(entities), count > 0 ? count : entities.size()));
+    return _createMany(std::move(entities), count > 0 ? count : entities.size());
 }
 
 template<typename... Components, typename... Storages>
