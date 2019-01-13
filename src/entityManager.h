@@ -391,7 +391,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
     assert(isValid(entity));
 
     return masks_[entity.index()].test(component_list_t::template get_type_index<Component>::value)
-             ? &(std::get<component_list_t::template get_type_index<Component>::value>(storage_).template get(entity))
+             ? &(std::get<component_list_t::template get_type_index<Component>::value>(storage_).template get(entity.index()))
              : nullptr;
 }
 
@@ -400,7 +400,7 @@ template<typename Component>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
   getComponent(Entity const& entity) -> enable_if_component<Component, Component*>
 {
-    return const_cast<Component*>(std::as_const(this)->template getComponent<Component>(entity));
+    return const_cast<Component*>(std::as_const(*this).template getComponent<Component>(entity));
 }
 
 template<typename... Components, typename... Storages>
@@ -416,7 +416,7 @@ template<typename... Cs>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
   getComponents(Entity const& entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>
 {
-    return std::tuple<Cs*...>(const_cast<Cs*>(std::as_const(this)->template getComponent<Cs>(entity))...);
+    return std::tuple<Cs*...>(const_cast<Cs*>(std::as_const(*this).template getComponent<Cs>(entity))...);
 }
 
 template<typename... Components, typename... Storages>
@@ -479,7 +479,7 @@ auto EntityManager<
   EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getStorage()
   -> enable_if_component<Component, component_storage_t<Component>&>
 {
-    return const_cast<component_storage_t<Component>&>(std::as_const(this)->template getStorage<Component>());
+    return const_cast<component_storage_t<Component>&>(std::as_const(*this).template getStorage<Component>());
 }
 
 template<typename... Components, typename... Storages>
@@ -488,13 +488,13 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
   FilterComponents...>::Iterator::next()
 {
     if constexpr (sizeof...(FilterComponents) != 0) {
-        while (cursor_ < capacity_ && (entityManager_.mask_[cursor_] & filter_) != filter_) {
+        while (cursor_ < capacity_ && (entityManager_.masks_[cursor_] & filter_) != filter_) {
             cursor_++;
         }
     }
 
     if constexpr (sizeof...(FilterComponents) == 0) {
-        while (cursor_ < capacity_ && entityManager_.mask_[cursor_].none()) {
+        while (cursor_ < capacity_ && entityManager_.masks_[cursor_].none()) {
             cursor_++;
         }
     }
