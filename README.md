@@ -51,6 +51,9 @@ using system_manager_config_t = enttx::SystemManagerConfig<
 
 ### entities
 
+Entity class is just wrapping uint64_t numbers to present entity version
+and entity index to associate entity with set of components.
+
 ### components
 
 ### entities and components management
