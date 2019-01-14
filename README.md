@@ -100,7 +100,7 @@ entityManager.hasComponents<Camera, Transform>(entity); // return bitset
  auto view = entityManager.getView<Transform, Camera>();
 
  for (auto&& entity : view) {
-    auto components = entityManager.getComponents<Transform, Camera>(entity);
+    auto [transfrom, camera] = entityManager.getComponents<Transform, Camera>(entity);
 
     // do smth...
  }
