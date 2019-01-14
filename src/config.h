@@ -18,6 +18,10 @@ struct EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list
 {
     static_assert(sizeof...(Components) == sizeof...(Storages));
 
+    static_assert((std::is_default_constructible_v<Components> && ...));
+
+    static_assert((std::is_default_constructible_v<Storages> && ...));
+
     using component_list_t = easy_mp::type_list<Components...>;
 
     using storage_list_t = easy_mp::type_list<Storages...>;
@@ -31,6 +35,8 @@ struct SystemManagerConfig;
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
 struct SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>
 {
+    static_assert((std::is_default_constructible_v<Systems> && ...));
+
     static constexpr size_t updateStageCount = UPDATE_STAGE_COUNT;
 
     static constexpr size_t systemCount = sizeof...(Systems);
