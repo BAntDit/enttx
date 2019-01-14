@@ -3,6 +3,15 @@
 
 Compile-time and header-only [Entity-Component-System](https://en.wikipedia.org/wiki/Entity_component_system) library.
 
+## Overview
+
+There is a lot of ECS implementations you can find in the github, at least i've seen many of them,
+but didn't find something suitable for my goals. Some of them do a lot of job in runtime,
+some of then are complicated for integration, some of them have tons of unecessary for me functionality and etc.
+Finally i decided to create another one.
+I don't pretend for best solution i just created another one solution suitable for my goals
+and shared it here if somebody finds my solutions usefull for his own projects as well.
+
 ## Usage tutorial
 
 ### configuration
@@ -96,6 +105,16 @@ entityManager.hasComponents<Camera, Transform>(entity); // return bitset
     // do smth...
  }
  ```
+
+ // or to get all entities that has at least one component
+
+  ```cpp
+  auto view = entityManager.getView<>();
+
+  for (auto&& entity : view) {
+      // do smth...
+  }
+  ```
 
  // or to get direct access to component's storage
 
