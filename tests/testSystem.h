@@ -18,9 +18,7 @@ public:
     void init(Args&&... args);
 
     template<typename EntityManager, size_t STAGE>
-    void update(EntityManager* entityManager, boost::float32_t dt) {
-        (void)dt;
-
+    void update(EntityManager* entityManager) {
         auto view = entityManager->template getView<uint32_t>();
 
         product_ = 1;

@@ -185,7 +185,7 @@ void systemsTest(
         }
     }
 
-    systemManager.update(0.0f);
+    systemManager.update();
 
     auto& system = systemManager.get<TestSystem>();
 

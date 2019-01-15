@@ -5,7 +5,6 @@
 #ifndef ENTTX_CONFIGURATION_H
 #define ENTTX_CONFIGURATION_H
 
-#include <boost/cstdfloat.hpp>
 #include "../src/config.h"
 #include "../src/componentStorage.h"
 #include "testSystem.h"
