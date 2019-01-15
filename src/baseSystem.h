@@ -5,7 +5,6 @@
 #ifndef ENTTX_BASESYSTEM_H
 #define ENTTX_BASESYSTEM_H
 
-#include <boost/cstdfloat.hpp>
 #include <cstddef>
 
 namespace enttx {
@@ -17,14 +16,14 @@ public:
     void init(Args&&... args);
 
     template<typename EntityManager, size_t STAGE>
-    void update(EntityManager* entityManager, boost::float32_t dt);
+    void update(EntityManager* entityManager);
 };
 
 template<class Derived>
 template<typename EntityManager, size_t STAGE>
-void BaseSystem<Derived>::update(EntityManager* entityManager, boost::float32_t dt)
+void BaseSystem<Derived>::update(EntityManager* entityManager)
 {
-    static_cast<Derived*>(this)->template update<EntityManager, STAGE>(entityManager, dt);
+    static_cast<Derived*>(this)->template update<EntityManager, STAGE>(entityManager);
 }
 
 template<class Derived>

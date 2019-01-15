@@ -6,7 +6,6 @@
 #define ENTTX_SYSTEMMANAGER_H
 
 #include "config.h"
-#include <boost/cstdfloat.hpp>
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
@@ -37,17 +36,17 @@ public:
     template<typename System>
     auto get() -> enable_if_system<System, System&>;
 
-    void update(boost::float32_t dt);
+    void update();
 
 private:
     template<size_t STAGE, typename System>
-    void _update(boost::float32_t dt);
+    void _update();
 
     template<size_t STAGE>
-    void _updateStage(boost::float32_t dt);
+    void _updateStage();
 
     template<size_t... STAGES>
-    void _updateStages(boost::float32_t dt, std::index_sequence<STAGES...>);
+    void _updateStages(std::index_sequence<STAGES...>);
 
 private:
     entity_manager_t* entities_;
@@ -62,35 +61,35 @@ SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_
 {}
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
-void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
-  update(boost::float32_t dt)
+void SystemManager<
+  SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::update()
 {
-    _updateStages(dt, std::make_index_sequence<UPDATE_STAGE_COUNT>{});
+    _updateStages(std::make_index_sequence<UPDATE_STAGE_COUNT>{});
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
 template<size_t... STAGES>
 void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
-  _updateStages(boost::float32_t dt, std::index_sequence<STAGES...>)
+  _updateStages(std::index_sequence<STAGES...>)
 {
-    (_updateStage<STAGES>(dt), ...);
+    (_updateStage<STAGES>(), ...);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
 template<size_t STAGE>
-void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
-  _updateStage(boost::float32_t dt)
+void SystemManager<
+  SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::_updateStage()
 {
-    (_update<STAGE, Systems>(dt), ...);
+    (_update<STAGE, Systems>(), ...);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
 template<size_t STAGE, typename System>
-void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
-  _update(boost::float32_t dt)
+void SystemManager<
+  SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::_update()
 {
     std::get<system_list_t::template get_type_index<System>::value>(systems_).template update<entity_manager_t, STAGE>(
-      entities_, dt);
+      entities_);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>

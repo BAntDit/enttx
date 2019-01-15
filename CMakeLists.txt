@@ -33,8 +33,6 @@ target_include_directories(
 
 find_package(easy-mp REQUIRED)
 
-find_package(Boost REQUIRED)
-
 add_subdirectory("example")
 
 if (TESTS)
