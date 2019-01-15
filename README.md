@@ -56,6 +56,14 @@ and entity index to associate entity with set of components.
 
 ### components
 
+Components stores data related to objects and have as little logic as possible (typically POD types).
+Components must be default constructible.
+
+### storages
+
+Enttx provides default storage type for components and CRTP template to create custom storage if necessary.
+Storages must be default constuctible.
+
 ### entities and components management
 
 EntityManager class provides all necessary functionality to manage entities and those classes
