@@ -105,11 +105,11 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
 
         auto view = entityManager.getView<uint32_t>();
 
-        for (auto&& entity : view) {
+        for (auto&& [entity, uint32] : view) {
             ASSERT_TRUE(entityManager.hasComponent<uint32_t>(entity));
             ASSERT_FALSE(entityManager.hasComponent<uint64_t>(entity));
 
-            sum += *entityManager.getComponent<uint32_t>(entity);
+            sum += uint32;
         }
 
         ASSERT_EQ(sum, 1000);
@@ -121,8 +121,8 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
 
         auto view = entityManager.getView<>();
 
-        for (auto&& entity : view) {
-            auto [cmp1, cmp2] = entityManager.getComponents<uint32_t, uint64_t >(entity);
+        for (auto&& [entity] : view) {
+            auto [cmp1, cmp2] = entityManager.getComponents<uint32_t, uint64_t>(entity);
 
             count1 += cmp1 != nullptr ? 1 : 0;
             count2 += cmp2 != nullptr ? 1 : 0;
@@ -135,7 +135,7 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
     {
         auto view = entityManager.getView<uint64_t>();
 
-        for (auto&& entity : view) {
+        for (auto&& [entity, uint64] : view) {
             entityManager.remove<uint64_t>(entity);
         }
 

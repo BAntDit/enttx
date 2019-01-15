@@ -149,7 +149,9 @@ auto fn = [](auto&& component) -> void {
 entityManager.applyForComponents<Camera, DirectionalLight>(entity, fn);
 ```
 
- ### systems management
+### systems
+
+### systems management
 
 
 

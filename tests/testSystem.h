@@ -25,10 +25,8 @@ public:
 
         product_ = 1;
 
-        for (auto&& entity : view) {
-            uint32_t val = *(entityManager->template getComponent<uint32_t>(entity));
-
-            product_ *= val;
+        for (auto&& [entity, component] : view) {
+            product_ *= component;
         }
     }
 
