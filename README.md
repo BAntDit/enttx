@@ -110,9 +110,7 @@ entityManager.hasComponents<Camera, Transform>(entity); // return bitset
  ```cpp
  auto view = entityManager.getView<Transform, Camera>();
 
- for (auto&& entity : view) {
-    auto [transform, camera] = entityManager.getComponents<Transform, Camera>(entity);
-
+ for (auto&& [entity, transform, camera] : view) {
     // do smth...
  }
  ```
@@ -122,7 +120,7 @@ entityManager.hasComponents<Camera, Transform>(entity); // return bitset
   ```cpp
   auto view = entityManager.getView<>();
 
-  for (auto&& entity : view) {
+  for (auto&& [entity] : view) {
       // do smth...
   }
   ```
