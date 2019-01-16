@@ -149,6 +149,36 @@ entityManager.applyForComponents<Camera, DirectionalLight>(entity, fn);
 
 ### systems
 
+Enttx provides BaseSystem CRTP pattern to create new system.
+
+```cpp
+class KinematicsSystem: public enttx::BaseSystem<KinematicsSystem>
+{
+public:
+    void init() { }
+
+    template<typename EntityManager, size_t STAGE>
+    void update(EntityManager* entityManager, boost::float32_t dt)
+    {
+        if constexpr (STAGE == STAGES::EARLY_UPDATE) {
+            auto view = entityManager->getView<Velocity, Acceleration>();
+
+            for (auto&& [entity, velocity, acceleration] : view) {
+                // do smth...
+            }
+        }
+
+        if constexpr (STAGE == STAGES::LATE_UPDATE) {
+            auto view = entityManager->getView<Velocity, Acceleration>();
+
+            for (auto&& [entity, velocity, acceleration] : view) {
+                // do smth...
+            }
+        }
+    }
+};
+```
+
 ### systems management
 
 
