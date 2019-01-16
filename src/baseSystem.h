@@ -16,12 +16,12 @@ public:
     void init(Args&&... args);
 
     template<typename EntityManager, size_t STAGE>
-    void update(EntityManager* entityManager);
+    void update(EntityManager& entityManager);
 };
 
 template<class Derived>
 template<typename EntityManager, size_t STAGE>
-void BaseSystem<Derived>::update(EntityManager* entityManager)
+void BaseSystem<Derived>::update(EntityManager& entityManager)
 {
     static_cast<Derived*>(this)->template update<EntityManager, STAGE>(entityManager);
 }

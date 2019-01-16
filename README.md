@@ -158,10 +158,10 @@ public:
     void init() { }
 
     template<typename EntityManager, size_t STAGE>
-    void update(EntityManager* entityManager)
+    void update(EntityManager& entityManager)
     {
         if constexpr (STAGE == STAGES::EARLY_UPDATE) {
-            auto view = entityManager->getView<Velocity, Acceleration>();
+            auto view = entityManager.template getView<Velocity, Acceleration>();
 
             for (auto&& [entity, velocity, acceleration] : view) {
                 // do smth...

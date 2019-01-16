@@ -89,7 +89,7 @@ void SystemManager<
   SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::_update()
 {
     std::get<system_list_t::template get_type_index<System>::value>(systems_).template update<entity_manager_t, STAGE>(
-      entities_);
+      *entities_);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
