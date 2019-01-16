@@ -158,7 +158,7 @@ public:
     void init() { }
 
     template<typename EntityManager, size_t STAGE>
-    void update(EntityManager* entityManager, boost::float32_t dt)
+    void update(EntityManager* entityManager)
     {
         if constexpr (STAGE == STAGES::EARLY_UPDATE) {
             auto view = entityManager->getView<Velocity, Acceleration>();
@@ -169,17 +169,17 @@ public:
         }
 
         if constexpr (STAGE == STAGES::LATE_UPDATE) {
-            auto view = entityManager->getView<Velocity, Acceleration>();
-
-            for (auto&& [entity, velocity, acceleration] : view) {
-                // do smth...
-            }
+            // do smth else...
         }
     }
 };
 ```
 
 ### systems management
+
+SystemManager calls update sequentially stage by stage once a frame, system by system once a stage.
+
+### multithreaded update
 
 
 
