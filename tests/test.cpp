@@ -143,6 +143,8 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
     }
 }
 
+// TODO:: Extend storage test
+
 void componentsStorageTest(enttx::EntityManager<entity_manager_config_t> &entityManager) {
     {
         auto entities = entityManager.createMany(std::array<enttx::Entity, 1000>());
