@@ -75,6 +75,13 @@ auto entity = entityManager.create();
 
 entityManager.destroy(entity);
 ```
+
+// or to create many at once:
+
+```cpp
+auto entities = entityManager.createMany(std::array<enttx::Entity, 1000>());
+```
+
 2. to test if entity valid:
 
 ```cpp
