@@ -153,6 +153,8 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
 void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::destroy(uint32_t index)
 {
+    assert(index <= maxValidIndex_);
+
     assert(indices_[index] != std::numeric_limits<uint32_t>::max());
 
     auto pos = indices_[index];
@@ -163,18 +165,25 @@ void ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::destroy(uint3
 
     indices_[index] = std::numeric_limits<uint32_t>::max();
 
-    uint32_t lastValidIndex = std::numeric_limits<uint32_t>::max();
-
     for (auto it = std::next(indices_.begin(), index); it != std::next(indices_.begin(), maxValidIndex_ + 1); it++) {
         if (*it == std::numeric_limits<uint32_t>::max())
             continue;
 
         (*it)--;
-
-        lastValidIndex = static_cast<uint32_t>(std::distance(indices_.begin(), it));
     }
 
-    maxValidIndex_ = lastValidIndex;
+    if (index == maxValidIndex_) {
+        uint32_t validIndex = std::numeric_limits<uint32_t>::max();
+
+        for (uint32_t i = maxValidIndex_; i != std::numeric_limits<uint32_t>::max(); i--) {
+            if (indices_[i] != std::numeric_limits<uint32_t>::max()) {
+                validIndex = i;
+                break;
+            }
+        }
+
+        maxValidIndex_ = validIndex;
+    }
 }
 
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
