@@ -140,6 +140,8 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
 
         assert(pos < store_.size());
 
+        indices_[index] = pos;
+
         it = store_.emplace(std::next(store_.cbegin(), pos), std::forward<Args>(args)...);
     }
 
