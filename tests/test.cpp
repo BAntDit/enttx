@@ -143,29 +143,49 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
     }
 }
 
-// TODO:: Extend storage test
-
 void componentsStorageTest(enttx::EntityManager<entity_manager_config_t> &entityManager) {
     {
         auto entities = entityManager.createMany(std::array<enttx::Entity, 1000>());
 
         for (auto&& entity : entities) {
-            entityManager.assign<uint32_t>(entity, 1);
+            entityManager.assign<uint32_t>(entity, entity.index());
+        }
+
+        for (auto&& entity : entities) {
+            if (entity.index() == 10 || entity.index() == 11 || entity.index() == 100 || entity.index() == 101) {
+                entityManager.remove<uint32_t>(entity);
+            }
         }
     }
 
     {
-        auto storage = entityManager.getStorage<uint32_t>();
+        auto view = entityManager.getView<uint32_t>();
 
-        ASSERT_EQ(storage.size(), 1000);
-
-        uint32_t sum = 0;
-
-        for (auto component : storage) {
-            sum += component;
+        for (auto&& [entity, uint32] : view) {
+            ASSERT_NE(entity.index(), 10);
+            ASSERT_NE(entity.index(), 11);
+            ASSERT_NE(entity.index(), 100);
+            ASSERT_NE(entity.index(), 101);
+            ASSERT_EQ(entity.index(), uint32);
         }
+    }
 
-        ASSERT_EQ(sum, 1000);
+    {
+        auto entity1 = entityManager.create();
+        auto entity2 = entityManager.create();
+        auto entity3 = entityManager.create();
+        auto entity4 = entityManager.create();
+
+        entityManager.assign<uint32_t>(entity1, entity1.index());
+        entityManager.assign<uint32_t>(entity2, entity2.index());
+        entityManager.assign<uint32_t>(entity4, entity4.index());
+        entityManager.assign<uint32_t>(entity3, entity3.index());
+
+        auto view = entityManager.getView<uint32_t>();
+
+        for (auto&& [entity, uint32] : view) {
+            ASSERT_EQ(entity.index(), uint32);
+        }
     }
 }
 
