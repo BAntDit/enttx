@@ -187,6 +187,34 @@ void componentsStorageTest(enttx::EntityManager<entity_manager_config_t> &entity
             ASSERT_EQ(entity.index(), uint32);
         }
     }
+
+    {
+        auto view = entityManager.getView<uint32_t>();
+
+        for (auto&& [entity, uint32] : view) {
+            if (entity.index() > 950) {
+                entityManager.remove<uint32_t>(entity);
+            }
+        }
+
+        auto entity1 = entityManager.create();
+        auto entity2 = entityManager.create();
+        auto entity3 = entityManager.create();
+        auto entity4 = entityManager.create();
+
+        entityManager.assign<uint32_t>(entity1, entity1.index());
+        entityManager.assign<uint32_t>(entity2, entity2.index());
+        entityManager.assign<uint32_t>(entity4, entity4.index());
+        entityManager.assign<uint32_t>(entity3, entity3.index());
+    }
+
+    {
+        auto view = entityManager.getView<uint32_t>();
+
+        for (auto&& [entity, uint32] : view) {
+            ASSERT_EQ(entity.index(), uint32);
+        }
+    }
 }
 
 void systemsTest(
