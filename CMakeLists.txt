@@ -33,8 +33,6 @@ target_include_directories(
 
 find_package(easy-mp REQUIRED)
 
-add_subdirectory("example")
-
 if (TESTS)
 
     find_package(GTest REQUIRED)
