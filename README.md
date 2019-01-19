@@ -186,8 +186,8 @@ public:
 
 SystemManager calls update sequentially stage by stage once a frame, system by system once a stage.
 
-### multithreaded update
+## Dependencies
 
-
+* [easy-mp](https://github.com/BAntDit/easy-mp) - meta-programming library
 
 
