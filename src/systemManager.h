@@ -23,6 +23,17 @@ public:
 
     using system_list_t = typename config_t::system_list_t;
 
+    template<typename... Components>
+    using system_list_for_components_t =
+      typename easy_mp::flatten<easy_mp::type_list<std::conditional_t<Systems::template is_in_use_v<Components...>,
+                                                                      easy_mp::type_list<Systems&>,
+                                                                      easy_mp::type_list<>>...>>::type;
+    template<typename... Components>
+    using const_system_list_for_components_t =
+      typename easy_mp::flatten<easy_mp::type_list<std::conditional_t<Systems::template is_in_use_v<Components...>,
+                                                                      easy_mp::type_list<Systems const&>,
+                                                                      easy_mp::type_list<>>...>>::type;
+
     using entity_manager_t = EntityManager<EntityManagerConfig>;
 
     template<typename S, typename R = void>
@@ -36,7 +47,18 @@ public:
     template<typename System>
     auto get() -> enable_if_system<System, System&>;
 
+    template<typename... Components>
+    auto getSystemsForComponents() ->
+      typename system_list_for_components_t<Components...>::template specialization_t<std::tuple>;
+
+    template<typename... Components>
+    auto getSystemsForComponents() const ->
+      typename const_system_list_for_components_t<Components...>::template specialization_t<std::tuple>;
+
     void update();
+
+    template<typename... Components>
+    static constexpr bool has_system_for_components_v = (Systems::template is_in_use_v<Components...> | ...);
 
 private:
     template<size_t STAGE, typename System>
@@ -47,6 +69,12 @@ private:
 
     template<size_t... STAGES>
     void _updateStages(std::index_sequence<STAGES...>);
+
+    template<typename... Ss>
+    auto _getSystemTuple(easy_mp::type_list<Ss...>) const -> std::tuple<Ss...>;
+
+    template<typename... Ss>
+    auto _getSystemTuple(easy_mp::type_list<Ss...>) -> std::tuple<Ss...>;
 
 private:
     entity_manager_t* entities_;
@@ -106,6 +134,40 @@ auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, 
   -> enable_if_system<System, System&>
 {
     return std::get<system_list_t::template get_type_index<System>::value>(systems_);
+}
+
+template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
+template<typename... Ss>
+auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
+  _getSystemTuple(easy_mp::type_list<Ss...>) const -> std::tuple<Ss...>
+{
+    return std::tuple<Ss...>(std::get<std::decay_t<Ss>>(systems_)...);
+}
+
+template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
+template<typename... Ss>
+auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
+  _getSystemTuple(easy_mp::type_list<Ss...>) -> std::tuple<Ss...>
+{
+    return std::tuple<Ss...>(std::get<std::decay_t<Ss>>(systems_)...);
+}
+
+template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
+template<typename... Components>
+auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
+  getSystemsForComponents() ->
+  typename system_list_for_components_t<Components...>::template specialization_t<std::tuple>
+{
+    return _getSystemTuple(const_system_list_for_components_t<Components...>{});
+}
+
+template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
+template<typename... Components>
+auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
+  getSystemsForComponents() const ->
+  typename const_system_list_for_components_t<Components...>::template specialization_t<std::tuple>
+{
+    return _getSystemTuple(const_system_list_for_components_t<Components...>{});
 }
 }
 
