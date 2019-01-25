@@ -162,7 +162,7 @@ Enttx provides BaseSystem CRTP pattern to create new system.
 class KinematicsSystem: public enttx::BaseSystem<KinematicsSystem>
 {
 public:
-    // to let the system manager know what type of components system is going to work with
+    // to let the system manager know type of components system is going to work with
     using tag_t = mp::type_list<Acceleration, Velocity>;
 
     void init() { }
