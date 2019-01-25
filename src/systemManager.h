@@ -141,7 +141,7 @@ template<typename... Ss>
 auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
   _getSystemTuple(easy_mp::type_list<Ss...>) const -> std::tuple<Ss...>
 {
-    return std::tuple<Ss...>(std::get<std::decay_t<Ss>>(systems_)...);
+    return std::tuple<Ss const&...>(std::get<std::decay_t<Ss>>(systems_)...);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
@@ -149,7 +149,7 @@ template<typename... Ss>
 auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
   _getSystemTuple(easy_mp::type_list<Ss...>) -> std::tuple<Ss...>
 {
-    return std::tuple<Ss...>(std::get<std::decay_t<Ss>>(systems_)...);
+    return std::tuple<Ss&...>(std::get<std::decay_t<Ss>>(systems_)...);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
@@ -158,7 +158,7 @@ auto SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, 
   getSystemsForComponents() ->
   typename system_list_for_components_t<Components...>::template specialization_t<std::tuple>
 {
-    return _getSystemTuple(const_system_list_for_components_t<Components...>{});
+    return _getSystemTuple(system_list_for_components_t<Components...>{});
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
