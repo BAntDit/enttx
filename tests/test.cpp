@@ -240,6 +240,16 @@ void systemsTest(
     auto& system = systemManager.get<TestSystem>();
 
     ASSERT_EQ(system.product(), product);
+
+    ASSERT_TRUE(system.is_in_use_v<uint32_t>);
+    ASSERT_FALSE(system.is_in_use_v<uint64_t>);
+
+    ASSERT_TRUE(systemManager.has_system_for_components_v<uint32_t>);
+    ASSERT_FALSE(systemManager.has_system_for_components_v<uint64_t>);
+
+    auto const& [ testSystem ] = systemManager.getSystemsForComponents<uint32_t>();
+
+    ASSERT_TRUE(&testSystem == &system);
 }
 
 TEST_F(TestFixture, CreateEntityTest) {

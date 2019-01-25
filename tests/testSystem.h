@@ -10,6 +10,8 @@
 class TestSystem: public enttx::BaseSystem<TestSystem>
 {
 public:
+    using tag_t = easy_mp::type_list<uint32_t>;
+
     TestSystem() :
         product_{ 1 }
     { }
