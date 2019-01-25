@@ -162,6 +162,9 @@ Enttx provides BaseSystem CRTP pattern to create new system.
 class KinematicsSystem: public enttx::BaseSystem<KinematicsSystem>
 {
 public:
+    // to let the system manager know what type of components system is going to work with
+    using tag_t = mp::type_list<Acceleration, Velocity>;
+
     void init() { }
 
     template<typename EntityManager, size_t STAGE>
@@ -185,6 +188,23 @@ public:
 ### systems management
 
 SystemManager calls update sequentially stage by stage once a frame, system by system once a stage.
+
+1. to start updating for all systems, just call:
+```cpp
+systemManager.update();
+```
+2. to test if system manager has system that works with defined list of components:
+
+```cpp
+if constexpr (SystemManager::template has_system_for_components_v<Velocity>) {
+    // do smth...
+}
+```
+
+3. to get the tuple of systems that works with defined list of components:
+```cpp
+auto systems = systemManager.getSystemsForComponents<Acceleration, Velocity>();
+```
 
 ## Dependencies
 
