@@ -5,7 +5,7 @@
 #ifndef ENTTX_TESTSYSTEM_H
 #define ENTTX_TESTSYSTEM_H
 
-#include "../src/baseSystem.h"
+#include "../src/enttx.h"
 
 class TestSystem: public enttx::BaseSystem<TestSystem>
 {

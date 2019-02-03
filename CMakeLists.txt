@@ -15,6 +15,7 @@ set(INTERFACE_HEADERS
     src/componentStorage.h
     src/baseSystem.h
     src/systemManager.h
+    src/enttx.h
 )
 
 set(FULL_PATH_INTERFACE_HEADERS "")

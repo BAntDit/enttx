@@ -5,8 +5,7 @@
 #ifndef ENTTX_CONFIGURATION_H
 #define ENTTX_CONFIGURATION_H
 
-#include "../src/config.h"
-#include "../src/componentStorage.h"
+#include "../src/enttx.h"
 #include "testSystem.h"
 
 using entity_manager_config_t = enttx::EntityManagerConfig<

@@ -6,8 +6,7 @@
 #define ENTTX_TEST_H
 
 #include <gtest/gtest.h>
-#include "../src/entityManager.h"
-#include "../src/systemManager.h"
+#include "../src/enttx.h"
 #include "configuration.h"
 
 class TestFixture: public testing::Test {
