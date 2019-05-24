@@ -61,39 +61,39 @@ public:
 
     auto createMany(std::vector<Entity>&& entities, size_t count = 0) -> std::vector<Entity>&&;
 
-    void destroy(Entity const& entity);
+    void destroy(Entity entity);
 
-    auto isValid(Entity const& entity) const -> bool;
+    auto isValid(Entity entity) const -> bool;
 
     template<typename... Cs>
-    void remove(Entity const& entity);
+    void remove(Entity entity);
 
     template<typename Component, typename... Args>
-    auto assign(Entity const& entity, Args&&... args) -> enable_if_component<Component, Component&>;
+    auto assign(Entity entity, Args&&... args) -> enable_if_component<Component, Component&>;
 
     template<typename Component>
-    auto getComponent(Entity const& entity) const -> enable_if_component<Component, Component const*>;
+    auto getComponent(Entity entity) const -> enable_if_component<Component, Component const*>;
 
     template<typename Component>
-    auto getComponent(Entity const& entity) -> enable_if_component<Component, Component*>;
+    auto getComponent(Entity entity) -> enable_if_component<Component, Component*>;
 
     template<typename... Cs>
-    auto getComponents(Entity const& entity) const -> enable_if_components<std::tuple<Cs const*...>, Cs...>;
+    auto getComponents(Entity entity) const -> enable_if_components<std::tuple<Cs const*...>, Cs...>;
 
     template<typename... Cs>
-    auto getComponents(Entity const& entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>;
+    auto getComponents(Entity entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>;
 
     template<typename Component>
-    auto hasComponent(Entity const& entity) const -> enable_if_component<Component, bool>;
+    auto hasComponent(Entity entity) const -> enable_if_component<Component, bool>;
 
     template<typename... Cs>
-    auto hasComponents(Entity const& entity) const -> enable_if_components<std::bitset<sizeof...(Cs)>, Cs...>;
+    auto hasComponents(Entity entity) const -> enable_if_components<std::bitset<sizeof...(Cs)>, Cs...>;
 
     template<typename Fn, typename Component>
-    auto applyForComponents(Entity const& entity, Fn&& fn) -> enable_if_component<Component>;
+    auto applyForComponents(Entity entity, Fn&& fn) -> enable_if_component<Component>;
 
     template<typename Fn, typename Component, typename... Tail>
-    void applyForComponents(Entity const& entity, Fn&& fn);
+    void applyForComponents(Entity entity, Fn&& fn);
 
     template<typename Component>
     auto getStorage() const -> enable_if_component<Component, component_storage_t<Component> const&>;
@@ -187,7 +187,7 @@ public:
 
 private:
     template<typename Component>
-    auto _remove(Entity const& entity) -> enable_if_component<Component>;
+    auto _remove(Entity entity) -> enable_if_component<Component>;
 
     template<typename Container>
     auto _createMany(Container&& entities, size_t count) -> Container&&;
@@ -333,7 +333,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::destroy(
-  Entity const& entity)
+  Entity entity)
 {
     assert(isValid(entity));
 
@@ -346,7 +346,7 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::isValid(
-  Entity const& entity) const -> bool
+  Entity entity) const -> bool
 {
     return entity.index() < versions_.size() && versions_[entity.index()] == entity.version();
 }
@@ -354,7 +354,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename Component>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::_remove(
-  Entity const& entity) -> enable_if_component<Component>
+  Entity entity) -> enable_if_component<Component>
 {
     assert(isValid(entity));
 
@@ -369,7 +369,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename... Cs>
 void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::remove(
-  Entity const& entity)
+  Entity entity)
 {
     (_remove<Cs>(entity), ...);
 }
@@ -377,7 +377,7 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename Component, typename... Args>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::assign(
-  Entity const& entity,
+  Entity entity,
   Args&&... args) -> enable_if_component<Component, Component&>
 {
     assert(isValid(entity));
@@ -393,7 +393,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename Component>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  getComponent(Entity const& entity) const -> enable_if_component<Component, Component const*>
+  getComponent(Entity entity) const -> enable_if_component<Component, Component const*>
 {
     assert(isValid(entity));
 
@@ -405,8 +405,9 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Component>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  getComponent(Entity const& entity) -> enable_if_component<Component, Component*>
+auto EntityManager<
+  EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getComponent(Entity entity)
+  -> enable_if_component<Component, Component*>
 {
     return const_cast<Component*>(std::as_const(*this).template getComponent<Component>(entity));
 }
@@ -414,15 +415,16 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename... Cs>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  getComponents(Entity const& entity) const -> enable_if_components<std::tuple<Cs const*...>, Cs...>
+  getComponents(Entity entity) const -> enable_if_components<std::tuple<Cs const*...>, Cs...>
 {
     return std::tuple<Cs const*...>(getComponent<Cs>(entity)...);
 }
 
 template<typename... Components, typename... Storages>
 template<typename... Cs>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  getComponents(Entity const& entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>
+auto EntityManager<
+  EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getComponents(Entity entity)
+  -> enable_if_components<std::tuple<Cs*...>, Cs...>
 {
     return std::tuple<Cs*...>(const_cast<Cs*>(std::as_const(*this).template getComponent<Cs>(entity))...);
 }
@@ -430,7 +432,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename Component>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  hasComponent(Entity const& entity) const -> enable_if_component<Component, bool>
+  hasComponent(Entity entity) const -> enable_if_component<Component, bool>
 {
     assert(isValid(entity));
 
@@ -440,7 +442,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename... Cs>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  hasComponents(Entity const& entity) const -> enable_if_components<std::bitset<sizeof...(Cs)>, Cs...>
+  hasComponents(Entity entity) const -> enable_if_components<std::bitset<sizeof...(Cs)>, Cs...>
 {
     std::bitset<sizeof...(Cs)> result;
 
@@ -452,7 +454,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 template<typename... Components, typename... Storages>
 template<typename Fn, typename Component>
 auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  applyForComponents(Entity const& entity, Fn&& fn) -> enable_if_component<Component>
+  applyForComponents(Entity entity, Fn&& fn) -> enable_if_component<Component>
 {
     static_assert(std::is_invocable_v<Fn, Component&>);
 
@@ -465,8 +467,8 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Fn, typename Component, typename... Tail>
-void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  applyForComponents(Entity const& entity, Fn&& fn)
+void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>,
+                                       easy_mp::type_list<Storages...>>>::applyForComponents(Entity entity, Fn&& fn)
 {
     applyForComponents<Fn, Component>(entity, std::forward<Fn>(fn));
     applyForComponents<Fn, Tail...>(entity, std::forward<Fn>(fn));

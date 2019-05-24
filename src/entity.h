@@ -27,9 +27,9 @@ public:
 
     explicit operator uint64_t() const { return id_; }
 
-    bool operator==(Entity const& rhs) const { return id_ == rhs.id_; }
-    bool operator!=(Entity const& rhs) const { return id_ != rhs.id_; }
-    bool operator<(Entity const& rhs) const { return id_ < rhs.id_; }
+    bool operator==(Entity rhs) const { return id_ == rhs.id_; }
+    bool operator!=(Entity rhs) const { return id_ != rhs.id_; }
+    bool operator<(Entity rhs) const { return id_ < rhs.id_; }
 
     auto index() const -> uint32_t { return static_cast<uint32_t>(id_ & 0xffffffffUL); }
 

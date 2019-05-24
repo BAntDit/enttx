@@ -26,6 +26,8 @@ public:
         product_ = 1;
 
         for (auto&& [entity, component] : view) {
+            (void)entity;
+
             product_ *= component;
         }
     }

@@ -136,6 +136,7 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
         auto view = entityManager.getView<uint64_t>();
 
         for (auto&& [entity, uint64] : view) {
+            (void)uint64;
             entityManager.remove<uint64_t>(entity);
         }
 
@@ -192,6 +193,7 @@ void componentsStorageTest(enttx::EntityManager<entity_manager_config_t> &entity
         auto view = entityManager.getView<uint32_t>();
 
         for (auto&& [entity, uint32] : view) {
+            (void)uint32;
             if (entity.index() > 950) {
                 entityManager.remove<uint32_t>(entity);
             }
