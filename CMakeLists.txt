@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-project(enttx VERSION 1.0.0.0)
+project(enttx VERSION 2.0.0.0)
 
 option(TESTS "whether needs to build tests" ON)
 
