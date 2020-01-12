@@ -13,7 +13,7 @@ namespace enttx {
 class Entity
 {
 public:
-    Entity()
+    Entity() noexcept
       : id_{ std::numeric_limits<uint64_t>::max() }
     {}
 
