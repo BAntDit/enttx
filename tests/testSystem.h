@@ -19,8 +19,8 @@ public:
     template<typename... Args>
     void init(Args&&... args);
 
-    template<typename EntityManager, size_t STAGE>
-    void update(EntityManager& entityManager) {
+    template<typename SystemManager,  typename EntityManager, size_t STAGE>
+    void update(SystemManager&, EntityManager& entityManager) {
         auto view = entityManager.template getView<uint32_t>();
 
         product_ = 1;

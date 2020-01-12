@@ -5,6 +5,7 @@
 #ifndef ENTTX_SYSTEMMANAGER_H
 #define ENTTX_SYSTEMMANAGER_H
 
+#include "../tests/configuration.h"
 #include "config.h"
 #include <cstddef>
 #include <tuple>
@@ -116,8 +117,8 @@ template<size_t STAGE, typename System>
 void SystemManager<
   SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::_update()
 {
-    std::get<system_list_t::template get_type_index<System>::value>(systems_).template update<entity_manager_t, STAGE>(
-      *entities_);
+    std::get<system_list_t::template get_type_index<System>::value>(systems_)
+      .template update<std::decay_t<decltype(*this)>, entity_manager_t, STAGE>(*this, *entities_);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>

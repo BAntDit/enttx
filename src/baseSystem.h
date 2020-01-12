@@ -18,8 +18,8 @@ public:
     template<typename... Args>
     void init(Args&&... args);
 
-    template<typename EntityManager, size_t STAGE>
-    void update(EntityManager& entityManager);
+    template<typename SystemManager, typename EntityManager, size_t STAGE>
+    void update(SystemManager& systemManager, EntityManager& entityManager);
 
     template<typename... Components>
     static constexpr bool is_in_use_v =
@@ -28,10 +28,10 @@ public:
 };
 
 template<class Derived>
-template<typename EntityManager, size_t STAGE>
-void BaseSystem<Derived>::update(EntityManager& entityManager)
+template<typename SystemManager, typename EntityManager, size_t STAGE>
+void BaseSystem<Derived>::update(SystemManager& systemManager, EntityManager& entityManager)
 {
-    static_cast<Derived*>(this)->template update<EntityManager, STAGE>(entityManager);
+    static_cast<Derived*>(this)->template update<SystemManager, EntityManager, STAGE>(systemManager, entityManager);
 }
 
 template<class Derived>
