@@ -5,7 +5,6 @@
 #ifndef ENTTX_SYSTEMMANAGER_H
 #define ENTTX_SYSTEMMANAGER_H
 
-#include "../tests/configuration.h"
 #include "config.h"
 #include <cstddef>
 #include <tuple>
