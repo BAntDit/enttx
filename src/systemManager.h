@@ -56,20 +56,21 @@ public:
     auto getSystemsForComponents() const ->
       typename const_system_list_for_components_t<Components...>::template specialization_t<std::tuple>;
 
-    void update();
+    template<typename... Args>
+    void update(Args&&... args);
 
     template<typename... Components>
     static constexpr bool has_system_for_components_v = (Systems::template is_in_use_v<Components...> | ...);
 
 private:
-    template<size_t STAGE, typename System>
-    void _update();
+    template<size_t STAGE, typename System, typename... Args>
+    void _update(Args&&... args);
 
-    template<size_t STAGE>
-    void _updateStage();
+    template<size_t STAGE, typename... Args>
+    void _updateStage(Args&&... args);
 
-    template<size_t... STAGES>
-    void _updateStages(std::index_sequence<STAGES...>);
+    template<size_t... STAGES, typename... Args>
+    void _updateStages(std::index_sequence<STAGES...>, Args&&... args);
 
     template<typename... Ss>
     auto _getSystemTuple(easy_mp::type_list<Ss...>) const -> std::tuple<Ss...>;
@@ -90,35 +91,37 @@ SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_
 {}
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
+template<typename... Args>
 void SystemManager<
-  SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::update()
+  SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::update(Args&&... args)
 {
-    _updateStages(std::make_index_sequence<UPDATE_STAGE_COUNT>{});
+    _updateStages(std::make_index_sequence<UPDATE_STAGE_COUNT>{}, std::forward<Args>(args)...);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
-template<size_t... STAGES>
+template<size_t... STAGES, typename... Args>
 void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
-  _updateStages(std::index_sequence<STAGES...>)
+  _updateStages(std::index_sequence<STAGES...>, Args&&... args)
 {
-    (_updateStage<STAGES>(), ...);
+    (_updateStage<STAGES>(std::forward<Args>(args)...), ...);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
-template<size_t STAGE>
-void SystemManager<
-  SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::_updateStage()
+template<size_t STAGE, typename... Args>
+void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::
+  _updateStage(Args&&... args)
 {
-    (_update<STAGE, Systems>(), ...);
+    (_update<STAGE, Systems>(std::forward<Args>(args)...), ...);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
-template<size_t STAGE, typename System>
+template<size_t STAGE, typename System, typename... Args>
 void SystemManager<
-  SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::_update()
+  SystemManagerConfig<UPDATE_STAGE_COUNT, EntityManagerConfig, easy_mp::type_list<Systems...>>>::_update(Args&&... args)
 {
     std::get<system_list_t::template get_type_index<System>::value>(systems_)
-      .template update<std::decay_t<decltype(*this)>, entity_manager_t, STAGE>(*this, *entities_);
+      .template update<std::decay_t<decltype(*this)>, entity_manager_t, STAGE>(
+        *this, *entities_, std::forward<Args>(args)...);
 }
 
 template<size_t UPDATE_STAGE_COUNT, typename EntityManagerConfig, typename... Systems>
