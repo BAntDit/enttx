@@ -13,7 +13,7 @@ void createEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManag
     }
 
     {
-         auto entities = entityManager.createMany(std::array<enttx::Entity, 1000>());
+         auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
         for (auto&& entity : entities) {
             ASSERT_TRUE(entityManager.isValid(entity));
@@ -21,9 +21,9 @@ void createEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManag
     }
 
     {
-        std::array<enttx::Entity, 1000> entities;
+        std::array<enttx::Entity, 1000> entities = {};
 
-        entityManager.createMany(entities);
+        entityManager.create(entities);
 
         for (auto&& entity : entities) {
             ASSERT_TRUE(entityManager.isValid(entity));
@@ -31,7 +31,7 @@ void createEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManag
     }
 
     {
-        auto entities = entityManager.createMany(std::vector<enttx::Entity>(1000));
+        auto entities = entityManager.create(std::vector<enttx::Entity>(1000));
 
         for (auto&& entity : entities) {
             ASSERT_TRUE(entityManager.isValid(entity));
@@ -41,7 +41,7 @@ void createEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManag
     {
         std::vector<enttx::Entity> entities(1000);
 
-        entityManager.createMany(entities);
+        entityManager.create(entities);
 
         for (auto&& entity : entities) {
             ASSERT_TRUE(entityManager.isValid(entity));
@@ -56,7 +56,7 @@ void createEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManag
 }
 
 void destoryEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManager) {
-    auto entities = entityManager.createMany(std::array<enttx::Entity, 1000>());
+    auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
     for (auto&& entity : entities) {
         ASSERT_TRUE(entityManager.isValid(entity));
@@ -85,7 +85,7 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
     }
 
     {
-        auto entities = entityManager.createMany(std::array<enttx::Entity, 1000>());
+        auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
         for (auto&& entity : entities) {
             entityManager.assign<uint32_t>(entity, 1);
@@ -93,7 +93,7 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
     }
 
     {
-        auto entities = entityManager.createMany(std::array<enttx::Entity, 1000>());
+        auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
         for (auto&& entity : entities) {
             entityManager.assign<uint64_t>(entity, 1);
@@ -146,7 +146,7 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
 
 void componentsStorageTest(enttx::EntityManager<entity_manager_config_t> &entityManager) {
     {
-        auto entities = entityManager.createMany(std::array<enttx::Entity, 1000>());
+        auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
         for (auto&& entity : entities) {
             entityManager.assign<uint32_t>(entity, entity.index());
@@ -226,7 +226,7 @@ void systemsTest(
     uint32_t product = 1;
 
     {
-        auto entities = entityManager.createMany(std::array<enttx::Entity, 4>());
+        auto entities = entityManager.create(std::array<enttx::Entity, 4>{});
 
         uint32_t val = 0;
 

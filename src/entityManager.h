@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <easy-mp/containers.h>
 #include <iterator>
 #include <tuple>
 #include <vector>
@@ -51,15 +52,11 @@ public:
 
     auto create() -> Entity;
 
-    template<size_t COUNT>
-    auto createMany(std::array<Entity, COUNT>& entities, size_t count = 0) -> std::array<Entity, COUNT>&;
-
-    template<size_t COUNT>
-    auto createMany(std::array<Entity, COUNT>&& entities, size_t count = 0) -> std::array<Entity, COUNT>&&;
-
-    auto createMany(std::vector<Entity>& entities, size_t count = 0) -> std::vector<Entity>&;
-
-    auto createMany(std::vector<Entity>&& entities, size_t count = 0) -> std::vector<Entity>&&;
+    template<typename Container>
+    auto create(Container&& entities)
+      -> std::enable_if_t<easy_mp::is_contiguous_v<Container> &&
+                            std::is_same_v<typename std::decay_t<Container>::value_type, Entity>,
+                          Container&&>;
 
     void destroy(Entity entity);
 
@@ -189,9 +186,6 @@ private:
     template<typename Component>
     auto _remove(Entity entity) -> enable_if_component<Component>;
 
-    template<typename Container>
-    auto _createMany(Container&& entities, size_t count) -> Container&&;
-
     std::vector<uint32_t> versions_;
     std::vector<uint32_t> dump_;
     std::vector<component_mask_t> masks_;
@@ -250,11 +244,12 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Container>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  _createMany(Container&& entities, size_t count) -> Container&&
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::create(
+  Container&& entities) -> std::enable_if_t<easy_mp::is_contiguous_v<Container> &&
+                                              std::is_same_v<typename std::decay_t<Container>::value_type, Entity>,
+                                            Container&&>
 {
-    assert(count <= entities.size());
-
+    size_t count = entities.size();
     size_t counter = 0;
 
     uint32_t index = 0;
@@ -295,40 +290,6 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
     }
 
     return std::forward<Container>(entities);
-}
-
-template<typename... Components, typename... Storages>
-template<size_t COUNT>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
-  std::array<Entity, COUNT>& entities,
-  size_t count) -> std::array<Entity, COUNT>&
-{
-    return _createMany(entities, count > 0 ? count : COUNT);
-}
-
-template<typename... Components, typename... Storages>
-template<size_t COUNT>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
-  std::array<Entity, COUNT>&& entities,
-  size_t count) -> std::array<Entity, COUNT>&&
-{
-    return _createMany(std::move(entities), count > 0 ? count : COUNT);
-}
-
-template<typename... Components, typename... Storages>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
-  std::vector<Entity>& entities,
-  size_t count) -> std::vector<Entity>&
-{
-    return _createMany(entities, count > 0 ? count : entities.size());
-}
-
-template<typename... Components, typename... Storages>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::createMany(
-  std::vector<Entity>&& entities,
-  size_t count) -> std::vector<Entity>&&
-{
-    return _createMany(std::move(entities), count > 0 ? count : entities.size());
 }
 
 template<typename... Components, typename... Storages>
