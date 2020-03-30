@@ -4,7 +4,7 @@
 
 #include "test.h"
 
-void createEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManager)
+void createEntityTest(enttx::EntityManager<entity_manager_config_t>& entityManager)
 {
     {
         auto entity = entityManager.create();
@@ -13,7 +13,7 @@ void createEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManag
     }
 
     {
-         auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
+        auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
         for (auto&& entity : entities) {
             ASSERT_TRUE(entityManager.isValid(entity));
@@ -55,7 +55,8 @@ void createEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManag
     }
 }
 
-void destoryEntityTest(enttx::EntityManager<entity_manager_config_t> &entityManager) {
+void destoryEntityTest(enttx::EntityManager<entity_manager_config_t>& entityManager)
+{
     auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
     for (auto&& entity : entities) {
@@ -67,7 +68,8 @@ void destoryEntityTest(enttx::EntityManager<entity_manager_config_t> &entityMana
     }
 }
 
-void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager) {
+void componentsTest(enttx::EntityManager<entity_manager_config_t>& entityManager)
+{
     {
         auto entity = entityManager.create();
 
@@ -144,7 +146,8 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t> &entityManager
     }
 }
 
-void componentsStorageTest(enttx::EntityManager<entity_manager_config_t> &entityManager) {
+void componentsStorageTest(enttx::EntityManager<entity_manager_config_t>& entityManager)
+{
     {
         auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
@@ -219,9 +222,8 @@ void componentsStorageTest(enttx::EntityManager<entity_manager_config_t> &entity
     }
 }
 
-void systemsTest(
-        enttx::EntityManager<entity_manager_config_t> &entityManager,
-        enttx::SystemManager<system_manager_config_t> &systemManager)
+void systemsTest(enttx::EntityManager<entity_manager_config_t>& entityManager,
+                 enttx::SystemManager<system_manager_config_t>& systemManager)
 {
     uint32_t product = 1;
 
@@ -249,27 +251,32 @@ void systemsTest(
     ASSERT_TRUE(systemManager.has_system_for_components_v<uint32_t>);
     ASSERT_FALSE(systemManager.has_system_for_components_v<uint64_t>);
 
-    auto const& [ testSystem ] = systemManager.getSystemsForComponents<uint32_t>();
+    auto const& [testSystem] = systemManager.getSystemsForComponents<uint32_t>();
 
     ASSERT_TRUE(&testSystem == &system);
 }
 
-TEST_F(TestFixture, CreateEntityTest) {
+TEST_F(TestFixture, CreateEntityTest)
+{
     createEntityTest(*entities_);
 }
 
-TEST_F(TestFixture, DestoryEntityTest) {
+TEST_F(TestFixture, DestoryEntityTest)
+{
     destoryEntityTest(*entities_);
 }
 
-TEST_F(TestFixture, ComponentsTest) {
+TEST_F(TestFixture, ComponentsTest)
+{
     componentsTest(*entities_);
 }
 
-TEST_F(TestFixture, ComponentsStorageTest) {
+TEST_F(TestFixture, ComponentsStorageTest)
+{
     componentsStorageTest(*entities_);
 }
 
-TEST_F(TestFixture, SystemsTest) {
+TEST_F(TestFixture, SystemsTest)
+{
     systemsTest(*entities_, *systems_);
 }

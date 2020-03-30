@@ -7,20 +7,21 @@
 
 #include "../src/enttx.h"
 
-class TestSystem: public enttx::BaseSystem<TestSystem>
+class TestSystem : public enttx::BaseSystem<TestSystem>
 {
 public:
     using tag_t = easy_mp::type_list<uint32_t>;
 
-    TestSystem() :
-        product_{ 1 }
-    { }
+    TestSystem()
+      : product_{ 1 }
+    {}
 
     template<typename... Args>
     void init(Args&&... args);
 
-    template<typename SystemManager,  typename EntityManager, size_t STAGE>
-    void update(SystemManager&, EntityManager& entityManager) {
+    template<typename SystemManager, typename EntityManager, size_t STAGE>
+    void update(SystemManager&, EntityManager& entityManager)
+    {
         auto view = entityManager.template getView<uint32_t>();
 
         product_ = 1;
@@ -38,4 +39,4 @@ private:
     uint32_t product_;
 };
 
-#endif //ENTTX_TESTSYSTEM_H
+#endif // ENTTX_TESTSYSTEM_H
