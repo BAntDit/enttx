@@ -5,17 +5,28 @@ project("enttx.examples.particles")
 
 set(SOURCES
     glad/glad.c
+    src/gl/program.cpp
+    src/model.cpp
     src/view.cpp
     src/main.cpp
 )
 
 set(PUBLIC_HEADERS
+    src/gl/resource.h
+    src/gl/program.h
+    src/typedefs.h
+    src/model.h
     src/view.h
     src/controller.h
 )
 
+set(PRIVATE_HEADERS
+    src/gl/internal/buildProgram.h
+)
+
 add_executable(
     ${PROJECT_NAME}
+    ${PRIVATE_HEADERS}
     ${PUBLIC_HEADERS}
     ${SOURCES}
 )
@@ -49,6 +60,11 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+
+find_package(glm REQUIRED)
+target_compile_definitions(${PROJECT_NAME} PRIVATE GLM_ENABLE_EXPERIMENTAL)
+target_compile_definitions(${PROJECT_NAME} PRIVATE GLM_FORCE_RADIANS)
+target_link_libraries(${PROJECT_NAME} glm)
 
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} Threads::Threads)

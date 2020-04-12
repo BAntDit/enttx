@@ -1,9 +1,9 @@
 
 #include <SDL2/SDL.h>
 #include <boost/scope_exit.hpp>
+#include <chrono>
 #include <iostream>
 #include <stdexcept>
-#include <chrono>
 
 #include "../glad/glad.h"
 #include "controller.h"
