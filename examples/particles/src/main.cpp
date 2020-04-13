@@ -62,7 +62,7 @@ int main()
 
     particles::Model model{};
     particles::View view{ width, height };
-    particles::Controller controller{};
+    particles::Controller controller{ width, height, 4.f, glm::radians(-75.f), glm::radians(75.f) };
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -78,6 +78,15 @@ int main()
                 controller.template onEvent<SDL_KEYDOWN>(event.key.keysym.sym);
             else if (event.type == SDL_QUIT)
                 controller.template onEvent<SDL_QUIT>();
+            else if (event.type == SDL_MOUSEBUTTONDOWN)
+                controller.template onEvent<SDL_MOUSEBUTTONDOWN>(
+                  event.button.button, event.button.clicks, event.button.x, event.button.y);
+            else if (event.type == SDL_MOUSEBUTTONUP)
+                controller.template onEvent<SDL_MOUSEBUTTONUP>();
+            else if (event.type == SDL_MOUSEMOTION)
+                controller.template onEvent<SDL_MOUSEMOTION>(event.motion.x, event.motion.y);
+            else if (event.type == SDL_MOUSEWHEEL)
+                controller.template onEvent<SDL_MOUSEWHEEL>(event.wheel.y);
         }
 
         controller.update(model, dt);

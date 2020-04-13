@@ -67,12 +67,28 @@ Model::Model(size_t maxParticlesAtOnce)
     projection_ = glm::perspective(0.78539f, 1.0f, 0.1f, 100.0f);
 
     // tmp::
-    auto xfrm = glm::transpose(mat4{ 1.f });
+    {
+        auto xfrm = glm::transpose(mat4{ vec4{ 1.f, 0.f, 0.f, 0.f },
+                                         vec4{ 0.f, 1.f, 0.f, 0.f },
+                                         vec4{ 0.f, 0.f, 1.f, 0.f },
+                                         vec4{ -1.f, 1.f, -0.5f, 1.f } });
 
-    auto src = glm::make_mat3x4(glm::value_ptr(xfrm));
+        auto src = glm::make_mat3x4(glm::value_ptr(xfrm));
 
-    std::copy_n(&src, 1, instancesPtr_);
+        std::copy_n(&src, 1, instancesPtr_);
+    }
 
-    commandsPtr_->instanceCount = 1;
-};
+    {
+        auto xfrm = glm::transpose(mat4{ vec4{ 1.f, 0.f, 0.f, 0.f },
+                                         vec4{ 0.f, 1.f, 0.f, 0.f },
+                                         vec4{ 0.f, 0.f, 1.f, 0.f },
+                                         vec4{ 1.f, -1.f, 0.5f, 1.f } });
+
+        auto src = glm::make_mat3x4(glm::value_ptr(xfrm));
+
+        std::copy_n(&src, 1, instancesPtr_ + 1);
+    }
+
+    commandsPtr_->instanceCount = 2;
+}
 }

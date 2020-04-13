@@ -45,7 +45,6 @@ void main() {
     vec2 position = positions[gl_VertexID];
 
     vUv = position * 0.5 + 0.5;
-    vUv.y = 1.0 - position.y;
 
     viewPosition.xy += vec2(position.x * scx, position.y * scy);
 
