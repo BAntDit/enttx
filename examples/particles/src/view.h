@@ -5,14 +5,24 @@
 #ifndef ENTTX_VIEW_H
 #define ENTTX_VIEW_H
 
-#include <SDL2/SDL_video.h>
-#include <memory>
+#include "gl/program.h"
 
 namespace examples::particles {
+class Model;
+
 class View
 {
 public:
-    View();
+    View(uint32_t width, uint32_t height);
+
+    void draw(Model const& model);
+
+    void init(Model const& model);
+
+private:
+    gl::Program program_;
+    uint32_t viewLocation_;
+    uint32_t projectionLocation_;
 };
 }
 

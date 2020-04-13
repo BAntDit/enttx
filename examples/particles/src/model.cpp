@@ -3,14 +3,20 @@
 //
 
 #include "model.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace examples::particles {
 Model::Model(size_t maxParticlesAtOnce)
   : buffers_{ [](GLsizei s, GLuint* d) -> void { glDeleteBuffers(s, d); } }
+  , vao_{ [](GLsizei s, GLuint* d) -> void { glDeleteVertexArrays(s, d); } }
   , commandsPtr_{ nullptr }
   , instancesPtr_{ nullptr }
+  , vaoId_{ 0 }
   , instances_{ 0 }
   , commands_{ 0 }
+  , view_{ 1.f }
+  , projection_{ 1.f }
 {
     auto const& [instances, commands] = buffers_.alloc([=, this](auto&& res) -> std::array<GLuint, 2> const& {
         glGenBuffers(res.size(), res.data());
@@ -43,6 +49,13 @@ Model::Model(size_t maxParticlesAtOnce)
         return res;
     });
 
+    auto const& [vao] = vao_.alloc([](auto&& res) -> std::array<GLuint, 1> const& {
+        glGenVertexArrays(res.size(), res.data());
+        return res;
+    });
+
+    vaoId_ = vao;
+
     instances_ = instances;
     commands_ = commands;
 
@@ -50,5 +63,16 @@ Model::Model(size_t maxParticlesAtOnce)
     commandsPtr_->instanceCount = 0;
     commandsPtr_->first = 0;
     commandsPtr_->baseInstance = 0;
+
+    projection_ = glm::perspective(0.78539f, 1.0f, 0.1f, 100.0f);
+
+    // tmp::
+    auto xfrm = glm::transpose(mat4{ 1.f });
+
+    auto src = glm::make_mat3x4(glm::value_ptr(xfrm));
+
+    std::copy_n(&src, 1, instancesPtr_);
+
+    commandsPtr_->instanceCount = 1;
 };
 }

@@ -5,22 +5,27 @@
 #ifndef ENTTX_CONTROLLER_H
 #define ENTTX_CONTROLLER_H
 
+#include "typedefs.h"
 #include <SDL2/SDL.h>
 #include <tuple>
 
 namespace examples::particles {
+class Model;
+
 class Controller
 {
 public:
-    Controller() = default;
+    Controller();
 
     template<int eventType, typename... EventArgs>
     void onEvent(EventArgs&&... args);
 
     [[nodiscard]] auto alive() const -> bool { return !shutdown_; }
 
+    void update(Model& model, real dt);
+
 private:
-    bool shutdown_ = false;
+    bool shutdown_;
 };
 
 template<int eventType, typename... EventArgs>

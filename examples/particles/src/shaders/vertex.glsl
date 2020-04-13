@@ -35,16 +35,16 @@ void main() {
         transforms[gl_BaseInstance + gl_InstanceID].zAxisTz,
         vec4(0.0, 0.0, 0.0, 1.0)));
 
-    mat4 matrixWorlView = viewMatrix * matrixWorld;
+    mat4 matrixWorlView = viewMatrix * worldMatrix;
 
     vec4 viewPosition = matrixWorlView * vec4(0.0, 0.0, 0.0, 1.0);
 
-    float scx = length(matrixWorld[0].xyz);
-    float scy = length(matrixWorld[1].xyz);
+    float scx = length(worldMatrix[0].xyz);
+    float scy = length(worldMatrix[1].xyz);
 
-    vec3 position = vec3(positions[gl_VertexID], 1.0);
+    vec2 position = positions[gl_VertexID];
 
-    vUv = position.xy * 0.5 + 0.5;
+    vUv = position * 0.5 + 0.5;
     vUv.y = 1.0 - position.y;
 
     viewPosition.xy += vec2(position.x * scx, position.y * scy);

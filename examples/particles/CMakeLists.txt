@@ -8,6 +8,7 @@ set(SOURCES
     src/gl/program.cpp
     src/model.cpp
     src/view.cpp
+    src/controller.cpp
     src/main.cpp
 )
 
@@ -51,6 +52,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         /Wall
     )
 endif()
+
+add_compile_definitions(${PROJECT_NAME} BASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
 
 find_package(Boost REQUIRED COMPONENTS system)
 

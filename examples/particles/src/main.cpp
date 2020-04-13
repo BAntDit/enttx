@@ -7,6 +7,7 @@
 
 #include "../glad/glad.h"
 #include "controller.h"
+#include "model.h"
 #include "view.h"
 
 int main()
@@ -59,7 +60,8 @@ int main()
 
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    particles::View view{};
+    particles::Model model{};
+    particles::View view{ width, height };
     particles::Controller controller{};
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -67,7 +69,7 @@ int main()
     while (controller.alive()) {
         auto end = std::chrono::high_resolution_clock::now();
 
-        auto dt = std::chrono::duration<float, std::ratio<1>>{ end - start }.count();
+        auto dt = std::chrono::duration<particles::real, std::ratio<1>>{ end - start }.count();
 
         SDL_Event event;
 
@@ -78,7 +80,9 @@ int main()
                 controller.template onEvent<SDL_QUIT>();
         }
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        controller.update(model, dt);
+
+        view.draw(model);
 
         SDL_GL_SwapWindow(window);
     }
