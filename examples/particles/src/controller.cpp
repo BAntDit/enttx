@@ -56,5 +56,7 @@ void Controller::update(Model& model, real dt)
                                       vec4{ up.x, up.y, up.z, 0.0f },
                                       vec4{ fw.x, fw.y, fw.z, 0.0f },
                                       vec4{ target.x - pos.x, target.y - pos.y, target.z - pos.z, 1.0f } });
+
+    model.origin() = glm::normalize(pos - target) * 2.f;
 }
 }

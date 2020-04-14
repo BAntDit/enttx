@@ -17,6 +17,7 @@ Model::Model(size_t maxParticlesAtOnce)
   , commands_{ 0 }
   , view_{ 1.f }
   , projection_{ 1.f }
+  , rayOrigin_{}
 {
     auto const& [instances, commands] = buffers_.alloc([=, this](auto&& res) -> std::array<GLuint, 2> const& {
         glGenBuffers(res.size(), res.data());

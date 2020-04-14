@@ -6,6 +6,7 @@
 #define ENTTX_VIEW_H
 
 #include "gl/program.h"
+#include "gl/resource.h"
 
 namespace examples::particles {
 class Model;
@@ -17,12 +18,19 @@ public:
 
     void draw(Model const& model);
 
-    void init(Model const& model);
-
 private:
-    gl::Program program_;
+    gl::Resource<3> outputs_;
+    gl::Resource<1> renderTarget_;
+    gl::Program particlesProgram_;
+    gl::Program screenProgram_;
+    uint32_t color_;
+    uint32_t alpha_;
+    uint32_t framebuffer_;
     uint32_t viewLocation_;
     uint32_t projectionLocation_;
+    uint32_t origin_;
+    uint32_t colorLocation_;
+    uint32_t alphaLocation_;
 };
 }
 

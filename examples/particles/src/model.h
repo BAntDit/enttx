@@ -22,6 +22,10 @@ public:
 
     [[nodiscard]] auto projection() -> mat4& { return projection_; }
 
+    [[nodiscard]] auto origin() const -> vec3 const& { return rayOrigin_; }
+
+    [[nodiscard]] auto origin() -> vec3& { return rayOrigin_; }
+
     [[nodiscard]] auto instances() const -> GLuint { return instances_; }
 
     [[nodiscard]] auto commands() const -> GLuint { return commands_; }
@@ -38,6 +42,7 @@ private:
     GLuint commands_;
     mat4 view_;
     mat4 projection_;
+    vec3 rayOrigin_;
 };
 }
 
