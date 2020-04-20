@@ -28,9 +28,10 @@ private:
     uint32_t framebuffer_;
     uint32_t viewLocation_;
     uint32_t projectionLocation_;
-    uint32_t origin_;
+    uint32_t originLocation_;
     uint32_t colorLocation_;
     uint32_t alphaLocation_;
+    uint32_t timeLocation_;
 };
 }
 

@@ -32,6 +32,10 @@ public:
 
     [[nodiscard]] auto vao() const -> GLuint { return vaoId_; }
 
+    [[nodiscard]] auto time() const -> real { return time_; }
+
+    [[nodiscard]] auto time() -> real& { return time_; }
+
 private:
     gl::Resource<2> buffers_;
     gl::Resource<1> vao_;
@@ -43,6 +47,7 @@ private:
     mat4 view_;
     mat4 projection_;
     vec3 rayOrigin_;
+    real time_;
 };
 }
 

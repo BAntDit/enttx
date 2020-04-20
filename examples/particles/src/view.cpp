@@ -21,9 +21,10 @@ View::View(uint32_t width, uint32_t height)
   , framebuffer_{ 0 }
   , viewLocation_{ 1 }
   , projectionLocation_{ 2 }
-  , origin_{ 3 }
+  , originLocation_{ 3 }
   , colorLocation_{ 0 }
   , alphaLocation_{ 1 }
+  , timeLocation_{ 4 }
 {
     auto const& [color, alpha, depth] = outputs_.alloc([=](auto&& res) -> std::array<GLuint, 3> const& {
         glGenTextures(res.size(), res.data());
@@ -47,7 +48,7 @@ View::View(uint32_t width, uint32_t height)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, width, height);
+        glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT16, width, height);
 
         return res;
     });
@@ -87,6 +88,8 @@ View::View(uint32_t width, uint32_t height)
     glBlendEquation(GL_FUNC_ADD);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glDepthMask(GL_FALSE);
 }
 
 void View::draw(Model const& model)
@@ -97,11 +100,14 @@ void View::draw(Model const& model)
 
     particlesProgram_.use();
 
+    glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
     glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
 
     glUniformMatrix4fv(viewLocation_, 1, false, glm::value_ptr(model.view()));
     glUniformMatrix4fv(projectionLocation_, 1, false, glm::value_ptr(model.projection()));
-    glUniform3fv(origin_, 1, glm::value_ptr(model.origin()));
+    glUniform3fv(originLocation_, 1, glm::value_ptr(model.origin()));
+    glUniform1f(timeLocation_, model.time());
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, model.instances());
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, model.instances());
@@ -128,6 +134,8 @@ void View::draw(Model const& model)
     glUniform1i(colorLocation_, 0);
     glUniform1i(alphaLocation_, 1);
 
+    glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glBindVertexArray(model.vao());
 

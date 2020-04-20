@@ -14,6 +14,6 @@ void main() {
 
     col.a = texture(alpha, vUv).r;
 
-    // outColor = vec4(a * col.rgb / clamp(col.a, 0.001, 50000.0), a);
-    outColor = vec4(col.rgb, 1.0);
+    outColor = vec4(a * col.rgb / clamp(col.a, 0.001, 50000.0), a);
+    outColor.rgb *= outColor.rgb;
 }

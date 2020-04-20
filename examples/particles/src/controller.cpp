@@ -57,6 +57,8 @@ void Controller::update(Model& model, real dt)
                                       vec4{ fw.x, fw.y, fw.z, 0.0f },
                                       vec4{ target.x - pos.x, target.y - pos.y, target.z - pos.z, 1.0f } });
 
-    model.origin() = glm::normalize(pos - target) * 2.f;
+    model.origin() = glm::normalize(target - pos) * 7.f;
+
+    model.time() += dt; // model.time() >= 2.f * pi ? 0.0 : model.time() + (dt * 0.001);
 }
 }

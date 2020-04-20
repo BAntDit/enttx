@@ -86,7 +86,7 @@ void Controller::onEvent(EventArgs&&... args)
 
         if (state_ == State::ROTATE) {
             auto pi = boost::math::constants::pi<boost::float32_t>();
-            auto speed = 0.25f;
+            auto speed = 60.0f;
 
             rotate_.x = pi * 2.0f * speed * (static_cast<boost::float32_t>(x) - rotationStart_.x) /
                         static_cast<boost::float32_t>(width_);

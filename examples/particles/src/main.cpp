@@ -71,6 +71,8 @@ int main()
 
         auto dt = std::chrono::duration<particles::real, std::ratio<1>>{ end - start }.count();
 
+        start = end;
+
         SDL_Event event;
 
         while (SDL_PollEvent(&event)) {
