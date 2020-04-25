@@ -37,14 +37,68 @@ float fbm(in vec3 p) {
     return n;
 }
 
-float sdShape(in vec3 p, in float r) {
-    return length(p) - r;
+float opU(in float d1, in float d2, in float k) {
+    float h = clamp(0.5 + 0.5 * (d2 - d1) / k, 0.0, 1.0);
+    return mix(d2, d1, h) - k * h * (1.0 - h);
 }
 
-float map(in vec3 p, in float r, in float amp) {
-    float freq = 2.;
+vec2 rot(in vec2 p, in float a) {
+    vec2 res;
 
-    return sdShape(p, r) + fbm(p * freq + amp * time) * amp;
+    res.x = p.x * cos(a) - p.y * sin(a);
+    res.y = p.x * sin(a) + p.y * cos(a);
+
+    return res;
+}
+
+vec2 rotf(in vec2 p, in float a) {
+    vec2 res = p;
+
+    res = rot(p, -pi / (a * 2.0));
+    res = rot(p, floor(atan(res.x, res.y) / pi * a) * (pi/a));
+
+    return res;
+}
+
+float sdFire(in vec3 p, in float r, in float amp) {
+    float freq = 2.;
+    float d = length(p) - r;
+
+    return d + fbm(p * freq + amp * time) * amp;
+}
+
+float sdFrag(in vec3 p, in vec3 b) {
+    vec3 q = abs(p) - b;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
+}
+
+float sdGrenade(in vec3 p) {
+    vec3 fp = p;
+
+    float h = min(.76, max(-.76, p.y));
+    h = fract(3. * h / .76);
+    h = ((1. - smoothstep(0.8, 1.0, h)) * (smoothstep(0., 0.2, h))) * 0.05;
+
+    fp.xz = rotf(fp.xz, 9.0);
+    // fp.yz = rotf(fp.yz, 14.0);
+    fp.z -= 0.7;
+
+    float d = sdFrag(fp, vec3(.1, .76, .125 + h));
+
+    p.y -= min(.3, max(-.3, p.y));
+
+    return opU(d, length(p) - 0.46, 0.6);
+}
+
+vec3 calcNormal(in vec3 p) {
+    const float h = 0.1e-2;
+    const vec2 k = vec2(1.0, -1.0);
+
+    return normalize(
+        k.xyy * sdGrenade(p + k.xyy * h).x +
+        k.yyx * sdGrenade(p + k.yyx * h).x +
+        k.yxy * sdGrenade(p + k.yxy * h).x +
+        k.xxx * sdGrenade(p + k.xxx * h).x);
 }
 
 vec4 explosion(in vec3 ro, in vec3 stp, in float exptime) {
@@ -56,19 +110,19 @@ vec4 explosion(in vec3 ro, in vec3 stp, in float exptime) {
     float r = mix(0.6 * 0.5, mix(-0.5, 0.6, clamp(exptime * 8, 0., 1.0)), 1. / max(1., (1.1 * exptime - .3)));
 
     for(int i = 0; i < 64; i++) {
-        float d = map(pos, r, amp);
+        float d = sdFire(pos, r, amp);
         vec4 col = vec4(0.);
 
         if (d < 0.2)
-        col = mix(vec4(vec3(2.), 1), vec4(1., 1., 0., 1.), d / 0.2);
+            col = mix(vec4(vec3(2.), 1.), vec4(1., 1., 0., 1.), d / 0.2);
         else if (d >= 0.2 && d < 0.4)
-        col = mix(vec4(1, 1, 0, 1), vec4(.9, 0, 0, 0.5), (d - 0.2) / 0.2);
+            col = mix(vec4(1., 1., 0, 1.), vec4(.9, 0., 0., 0.5), (d - 0.2) / 0.2);
         else if (d >= 0.4 && d < 0.6)
-        col = mix(vec4(1, 0, 0, 0.5), vec4(0, 0, 0, 0.4), (d - 0.4) / 0.2);
-        // if (d >= 0.6 && d < 0.8)
-        //     col = mix(vec4(0.2, 0.2, 0.2, 0.4), vec4(.5, .5, .5, 0.2), (d - 0.6) / 0.2);
+            col = mix(vec4(1., 0., 0., 0.5), vec4(0., 0., 0., 0.4), (d - 0.4) / 0.2);
+        if (d >= 0.6 && d < 0.8)
+            col = mix(vec4(0.2, 0.2, 0.2, 0.4), vec4(.5, .5, .5, 0.2), (d - 0.6) / 0.2);
         // else if (d >= 0.8 && d < 1.0)
-        //     col = mix(vec4(0.5, .5, 0.5, .2), vec4(0, 0, 0, 0), (d - 0.8) / 0.2);
+        //  col = mix(vec4(0.5, .5, 0.5, .2), vec4(0, 0, 0, 0), (d - 0.8) / 0.2);
 
         col.a *= density;
 
@@ -82,13 +136,13 @@ vec4 explosion(in vec3 ro, in vec3 stp, in float exptime) {
     return sum;
 }
 
-vec4 bomb(in vec3 ro, in vec3 rd) {
+vec4 grenade(in vec3 ro, in vec3 rd) {
     float d = 0.1e-2;
 
     for (int i = 0; i < 64 && d < 10.; i++) {
         vec3 pos = ro + rd * d;
 
-        float h = map(pos, 0.6, 0.);
+        float h = sdGrenade(pos);
 
         if (abs(h) < 0.1e-2) break;
 
@@ -99,9 +153,9 @@ vec4 bomb(in vec3 ro, in vec3 rd) {
 
     if (d < 10.) {
         vec3 pos = ro + rd * d;
-        vec3 nor = normalize(pos);
+        vec3 nor = calcNormal(pos);
 
-        col.rgb = nor;
+        col.rgb = dot(nor, rd) * vec3(.0, 1., .0) + vec3(0.1, .2, 0.1);
         col.a = 1.;
     }
 
@@ -109,8 +163,8 @@ vec4 bomb(in vec3 ro, in vec3 rd) {
 }
 
 vec4 raymarch(in vec3 ro, in vec3 rd, in float stepSize) {
-    float delay = 4.;
-    return time < delay ? bomb(ro, rd) : explosion(ro, rd * stepSize, time - delay);
+    float delay = 40.;
+    return time < delay ? grenade(ro, rd) : explosion(ro, rd * stepSize, time - delay);
 }
 
 float weight(float z, float a) {
