@@ -72,22 +72,74 @@ float sdFrag(in vec3 p, in vec3 b) {
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
-float sdGrenade(in vec3 p) {
-    vec3 fp = p;
+vec2 sdGrenade(in vec3 p) {
+    float m = 1.;
+    vec3 p1 = p;
 
-    float h = min(.76, max(-.76, p.y));
-    h = fract(3. * h / .76);
-    h = ((1. - smoothstep(0.8, 1.0, h)) * (smoothstep(0., 0.2, h))) * 0.05;
+    p1.xz = rotf(p1.xz, 6.0);
+    p1.yz = rotf(p1.yz, 6.0);
+    p1.z -= 0.6;
 
-    fp.xz = rotf(fp.xz, 9.0);
-    // fp.yz = rotf(fp.yz, 14.0);
-    fp.z -= 0.7;
+    float d = sdFrag(p1, vec3(.1, .1, .125));
 
-    float d = sdFrag(fp, vec3(.1, .76, .125 + h));
+    vec3 p2 = p;
+    p2.y -= min(.3, max(-.3, p2.y));
 
-    p.y -= min(.3, max(-.3, p.y));
+    d = opU(d, length(p2) - 0.46, 0.6);
 
-    return opU(d, length(p) - 0.46, 0.6);
+    vec3 p3 = p;
+    p3.y -= 0.5;
+
+    p3.y -= min(.4, max(-.4, p3.y));
+
+    d = opU(d, length(p3) - 0.3, 0.1);
+
+    vec3 p4 = p;
+    p4.y -= 0.9;
+    p4.y -= min(.8, max(-.8, p4.y));
+
+    {
+        float d1 = length(p4) - 0.18;
+        m = d1 < d ? 2. : m;
+        d = min(d1, d);
+    }
+
+    vec3 p5 = p;
+
+    {
+        p5.x -= 0.75;
+        p5.y -= 0.025;
+
+        p5.y -= min(.4, max(-.4, p5.y));
+
+        vec3 p6 = p5;
+        p6.y += .05;
+        p6.x += .1;
+
+        float d1 = max(length(p5) - 0.15, 0.23 - length(p6));
+
+        vec3 p7 = p;
+
+        p7.x = cos(pi / -4.) * p.x - sin(pi / -4.) * p.y;
+        p7.y = sin(pi / -4.) * p.x + cos(pi / -4.) * p.y;
+        p7.y -= 0.325;
+        p7.x -= 0.825;
+
+        p7.y -= min(.55, max(-.55, p7.y));
+
+        vec3 p8 = p7;
+        p8.y += 0.08;
+        p8.x += 0.08;
+
+        float d2 = max(length(p7) - 0.15, 0.23 - length(p8));
+
+        d1 =  opU(d1, d2, 0.0125);
+
+        m = d1 < d ? 2. : m;
+        d = min(d1, d);
+    }
+
+    return vec2(d, m);
 }
 
 vec3 calcNormal(in vec3 p) {
@@ -138,24 +190,25 @@ vec4 explosion(in vec3 ro, in vec3 stp, in float exptime) {
 
 vec4 grenade(in vec3 ro, in vec3 rd) {
     float d = 0.1e-2;
+    float m = 0.;
 
     for (int i = 0; i < 64 && d < 10.; i++) {
-        vec3 pos = ro + rd * d;
+        vec3 pos = ro + rd  * d;
+        vec2 res = sdGrenade(pos);
 
-        float h = sdGrenade(pos);
+        if (abs(res.x) < 0.1e-2) break;
 
-        if (abs(h) < 0.1e-2) break;
-
-        d += h;
+        d += res.x;
+        m = res.y;
     }
 
-    vec4 col = vec4(0.);
+    vec4 col = vec4(0., 0., 0., 0.1);
 
     if (d < 10.) {
         vec3 pos = ro + rd * d;
         vec3 nor = calcNormal(pos);
 
-        col.rgb = dot(nor, rd) * vec3(.0, 1., .0) + vec3(0.1, .2, 0.1);
+        col.rgb = max(dot(nor, -rd), 0.) * vec3(.0, 0.5, .0) + vec3(0.1, .2, 0.1);
         col.a = 1.;
     }
 
