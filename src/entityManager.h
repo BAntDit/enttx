@@ -383,8 +383,9 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename... Cs>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  getComponents([[maybe_unused]] Entity entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>
+auto
+  EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getComponents(
+    [[maybe_unused]] Entity entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>
 {
     return std::tuple<Cs*...>(const_cast<Cs*>(std::as_const(*this).template getComponent<Cs>(entity))...);
 }
