@@ -8,6 +8,7 @@
 #include <array>
 #include <cassert>
 #include <vector>
+#include <limits>
 
 #include "baseComponentStorage.h"
 
