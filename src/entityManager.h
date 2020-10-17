@@ -34,11 +34,8 @@ public:
     template<typename C, typename R = void>
     using enable_if_component = std::enable_if_t<component_list_t::template has_type<C>::value, R>;
 
-    template<typename R, typename... RequestedComponents>
-    using enable_if_components = std::enable_if_t<
-      std::is_same_v<typename easy_mp::inner_join<component_list_t, easy_mp::type_list<RequestedComponents...>>::type,
-                     easy_mp::type_list<RequestedComponents...>>,
-      R>;
+    template<typename R, typename... Cs>
+    using enable_if_components = std::enable_if_t<(... && component_list_t::template has_type<Cs>::value), R>;
 
     template<typename C>
     using component_storage_t =
@@ -383,9 +380,8 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename... Cs>
-auto
-  EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getComponents(
-    [[maybe_unused]] Entity entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>
+auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+  getComponents([[maybe_unused]] Entity entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>
 {
     return std::tuple<Cs*...>(const_cast<Cs*>(std::as_const(*this).template getComponent<Cs>(entity))...);
 }

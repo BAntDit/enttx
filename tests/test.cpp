@@ -87,6 +87,23 @@ void componentsTest(enttx::EntityManager<entity_manager_config_t>& entityManager
     }
 
     {
+        auto entity = entityManager.create();
+
+        entityManager.assign<uint32_t>(entity, 1);
+        entityManager.assign<uint64_t>(entity, 2);
+
+        auto [cmp1, cmp2] = entityManager.getComponents<uint64_t, uint32_t>(entity);
+
+        auto test1 = std::is_same_v<decltype(cmp1), uint64_t*>;
+        auto test2 = std::is_same_v<decltype(cmp2), uint32_t*>;
+
+        ASSERT_TRUE(test1);
+        ASSERT_TRUE(test2);
+
+        entityManager.destroy(entity);
+    }
+
+    {
         auto entities = entityManager.create(std::array<enttx::Entity, 1000>{});
 
         for (auto&& entity : entities) {
