@@ -21,7 +21,7 @@ protected:
     void SetUp() override
     {
         entities_ = std::make_unique<enttx::EntityManager<entity_manager_config_t>>(1000);
-        systems_ = std::make_unique<enttx::SystemManager<system_manager_config_t>>(entities_.get());
+        systems_ = std::make_unique<enttx::SystemManager<system_manager_config_t>>();
     }
 
     void TearDown() override

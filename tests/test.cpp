@@ -256,7 +256,7 @@ void systemsTest(enttx::EntityManager<entity_manager_config_t>& entityManager,
         }
     }
 
-    systemManager.update();
+    systemManager.update(entityManager);
 
     auto& system = systemManager.get<TestSystem>();
 
