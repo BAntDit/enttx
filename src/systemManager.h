@@ -121,7 +121,7 @@ void SystemManager<SystemManagerConfig<UPDATE_STAGE_COUNT, easy_mp::type_list<Sy
   Args&&... args)
 {
     std::get<system_list_t::template get_type_index<System>::value>(systems_)
-      .template update<std::decay_t<decltype(*this)>, STAGE>(
+      .template update<std::decay_t<decltype(*this)>, EntityManager, STAGE>(
         *this, std::forward<EntityManager>(entityManager), std::forward<Args>(args)...);
 }
 
