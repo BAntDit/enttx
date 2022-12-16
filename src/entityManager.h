@@ -356,8 +356,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
     assert(isValid(entity));
 
     return masks_[entity.index()].test(component_list_t::template get_type_index<Component>::value)
-             ? &(std::get<component_list_t::template get_type_index<Component>::value>(storage_).template get(
-                 entity.index()))
+             ? &(std::get<component_list_t::template get_type_index<Component>::value>(storage_).get(entity.index()))
              : nullptr;
 }
 
