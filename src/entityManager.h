@@ -343,7 +343,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
     masks_[entity.index()].set(component_list_t::template get_type_index<Component>::value);
 
-    return std::get<component_list_t::template get_type_index<Component>::value>(storage_).template create(
+    return std::get<component_list_t::template get_type_index<Component>::value>(storage_).create(
       entity.index(), std::forward<Args>(args)...);
 }
 
