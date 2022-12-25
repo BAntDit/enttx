@@ -319,8 +319,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
     if (masks_[entity.index()].test(component_list_t::template get_type_index<Component>::value)) {
         masks_[entity.index()].reset(component_list_t::template get_type_index<Component>::value);
 
-        std::get<component_list_t::template get_type_index<Component>::value>(storage_).template destroy(
-          entity.index());
+        std::get<component_list_t::template get_type_index<Component>::value>(storage_).destroy(entity.index());
     }
 }
 
