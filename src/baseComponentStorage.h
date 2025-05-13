@@ -5,6 +5,7 @@
 #ifndef ENTTX_BASESTORAGE_H
 #define ENTTX_BASESTORAGE_H
 
+#include <cstddef>
 #include <cstdint>
 #include <utility>
 
@@ -22,9 +23,9 @@ public:
 
     void destroy(uint32_t index);
 
-    auto capacity() const -> size_t;
+    [[nodiscard]] auto capacity() const -> size_t;
 
-    auto size() const -> size_t;
+    [[nodiscard]] auto size() const -> size_t;
 
     auto begin() const;
 
