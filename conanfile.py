@@ -10,7 +10,7 @@ class EnttxRecipe(ConanFile):
 
     settings = "os", "compiler", "arch", "build_type"
 
-    exports_sources = "CMakeList.txt", "*.cmake", ".clang-format", ".md", "src/*.h", "tests/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "*.cmake", ".clang-format", ".md", "src/*.h", "tests/*", "cmake/*"
 
     def build_requirements(self):
         self.tool_requires("cmake/[>=3.10]")
