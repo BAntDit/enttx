@@ -5,7 +5,6 @@
 #ifndef ENTTX_COMPONENTSTORAGE_H
 #define ENTTX_COMPONENTSTORAGE_H
 
-#include <array>
 #include <cassert>
 #include <limits>
 #include <vector>

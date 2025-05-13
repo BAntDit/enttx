@@ -5,7 +5,6 @@
 #ifndef ENTTX_BASESTORAGE_H
 #define ENTTX_BASESTORAGE_H
 
-#include <cstddef>
 #include <cstdint>
 #include <utility>
 

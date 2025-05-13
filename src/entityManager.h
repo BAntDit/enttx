@@ -7,8 +7,8 @@
 
 #include <cassert>
 #include <cstdint>
-#include <easy-mp/containers.h>
 #include <iterator>
+#include <metrix/containers.h>
 #include <tuple>
 #include <vector>
 
@@ -20,10 +20,10 @@ template<typename Config>
 class EntityManager;
 
 template<typename... Components, typename... Storages>
-class EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>
+class EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>
 {
 public:
-    using config_t = EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>;
+    using config_t = EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>;
 
     using component_mask_t = typename config_t::component_mask_t;
 
@@ -43,21 +43,21 @@ public:
 
     explicit EntityManager(size_t initialSize = 10000);
 
-    auto size() const -> size_t;
+    [[nodiscard]] auto size() const -> size_t;
 
-    auto capacity() const -> size_t;
+    [[nodiscard]] auto capacity() const -> size_t;
 
     auto create() -> Entity;
 
     template<typename Container>
     auto create(Container&& entities)
-      -> std::enable_if_t<easy_mp::is_contiguous_v<Container> &&
+      -> std::enable_if_t<metrix::is_contiguous_v<Container> &&
                             std::is_same_v<typename std::decay_t<Container>::value_type, Entity>,
                           Container&&>;
 
     void destroy(Entity entity);
 
-    auto isValid(Entity entity) const -> bool;
+    [[nodiscard]] auto isValid(Entity entity) const -> bool;
 
     template<typename... Cs>
     void remove(Entity entity);
@@ -103,7 +103,7 @@ public:
           typename std::conditional_t<isConst, EntityManager<config_t> const&, EntityManager<config_t>&>;
 
     public:
-        using filter_component_list_t = easy_mp::type_list<FilterComponents...>;
+        using filter_component_list_t = metrix::type_list<FilterComponents...>;
 
         class Iterator
         {
@@ -129,7 +129,8 @@ public:
               , capacity_{ entityManager.capacity() }
               , filter_{ filter }
               , entityManager_{ entityManager }
-            {}
+            {
+            }
 
             void next();
 
@@ -162,7 +163,7 @@ public:
           : entityManager_{ entityManager }
           , filter_{}
         {
-            static_assert(std::is_same_v<typename easy_mp::inner_join<component_list_t, filter_component_list_t>::type,
+            static_assert(std::is_same_v<typename metrix::inner_join<component_list_t, filter_component_list_t>::type,
                                          filter_component_list_t>);
 
             (filter_.set(component_list_t::template get_type_index<FilterComponents>::value), ...);
@@ -191,7 +192,7 @@ private:
 };
 
 template<typename... Components, typename... Storages>
-EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::EntityManager(
+EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::EntityManager(
   size_t initialSize /* = 10000*/)
   : versions_{}
   , dump_{}
@@ -204,21 +205,21 @@ EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::ty
 }
 
 template<typename... Components, typename... Storages>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::size()
-  const -> size_t
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::size() const
+  -> size_t
 {
     return versions_.size() - dump_.size();
 }
 
 template<typename... Components, typename... Storages>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::capacity()
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::capacity()
   const -> size_t
 {
     return versions_.size();
 }
 
 template<typename... Components, typename... Storages>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::create()
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::create()
   -> Entity
 {
     uint32_t index = 0, version = 0;
@@ -241,8 +242,8 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Container>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::create(
-  Container&& entities) -> std::enable_if_t<easy_mp::is_contiguous_v<Container> &&
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::create(
+  Container&& entities) -> std::enable_if_t<metrix::is_contiguous_v<Container> &&
                                               std::is_same_v<typename std::decay_t<Container>::value_type, Entity>,
                                             Container&&>
 {
@@ -290,7 +291,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 }
 
 template<typename... Components, typename... Storages>
-void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::destroy(
+void EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::destroy(
   Entity entity)
 {
     assert(isValid(entity));
@@ -303,7 +304,7 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 }
 
 template<typename... Components, typename... Storages>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::isValid(
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::isValid(
   Entity entity) const -> bool
 {
     return entity.index() < versions_.size() && versions_[entity.index()] == entity.version();
@@ -311,7 +312,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Component>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::_remove(
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::_remove(
   Entity entity) -> enable_if_component<Component>
 {
     assert(isValid(entity));
@@ -325,7 +326,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename... Cs>
-void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::remove(
+void EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::remove(
   Entity entity)
 {
     (_remove<Cs>(entity), ...);
@@ -333,7 +334,7 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Component, typename... Args>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::assign(
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::assign(
   Entity entity,
   Args&&... args) -> enable_if_component<Component, Component&>
 {
@@ -349,8 +350,8 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Component>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  getComponent(Entity entity) const -> enable_if_component<Component, Component const*>
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getComponent(
+  Entity entity) const -> enable_if_component<Component, Component const*>
 {
     assert(isValid(entity));
 
@@ -361,16 +362,15 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Component>
-auto EntityManager<
-  EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getComponent(Entity entity)
-  -> enable_if_component<Component, Component*>
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getComponent(
+  Entity entity) -> enable_if_component<Component, Component*>
 {
     return const_cast<Component*>(std::as_const(*this).template getComponent<Component>(entity));
 }
 
 template<typename... Components, typename... Storages>
 template<typename... Cs>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::
   getComponents(Entity entity) const -> enable_if_components<std::tuple<Cs const*...>, Cs...>
 {
     return std::tuple<Cs const*...>(getComponent<Cs>(entity)...);
@@ -378,7 +378,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename... Cs>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::
   getComponents([[maybe_unused]] Entity entity) -> enable_if_components<std::tuple<Cs*...>, Cs...>
 {
     return std::tuple<Cs*...>(const_cast<Cs*>(std::as_const(*this).template getComponent<Cs>(entity))...);
@@ -386,8 +386,8 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Component>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-  hasComponent(Entity entity) const -> enable_if_component<Component, bool>
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::hasComponent(
+  Entity entity) const -> enable_if_component<Component, bool>
 {
     assert(isValid(entity));
 
@@ -396,7 +396,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename... Cs>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::
   hasComponents(Entity entity) const -> enable_if_components<std::bitset<sizeof...(Cs)>, Cs...>
 {
     std::bitset<sizeof...(Cs)> result;
@@ -408,7 +408,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Fn, typename Component>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::
   applyForComponents(Entity entity, Fn&& fn) -> enable_if_component<Component>
 {
     static_assert(std::is_invocable_v<Fn, Component&>);
@@ -422,8 +422,8 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename Fn, typename Component, typename... Tail>
-void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>,
-                                       easy_mp::type_list<Storages...>>>::applyForComponents(Entity entity, Fn&& fn)
+void EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
+                                       metrix::type_list<Storages...>>>::applyForComponents(Entity entity, Fn&& fn)
 {
     applyForComponents<Fn, Component>(entity, std::forward<Fn>(fn));
     applyForComponents<Fn, Tail...>(entity, std::forward<Fn>(fn));
@@ -431,17 +431,15 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>,
 
 template<typename... Components, typename... Storages>
 template<typename Component>
-auto EntityManager<
-  EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getStorage() const
-  -> enable_if_component<Component, component_storage_t<Component> const&>
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getStorage()
+  const -> enable_if_component<Component, component_storage_t<Component> const&>
 {
     return std::get<component_list_t::template get_type_index<Component>::value>(storage_);
 }
 
 template<typename... Components, typename... Storages>
 template<typename Component>
-auto EntityManager<
-  EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getStorage()
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getStorage()
   -> enable_if_component<Component, component_storage_t<Component>&>
 {
     return const_cast<component_storage_t<Component>&>(std::as_const(*this).template getStorage<Component>());
@@ -449,7 +447,7 @@ auto EntityManager<
 
 template<typename... Components, typename... Storages>
 template<bool isConst, typename... FilterComponents>
-void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+void EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::
   View<isConst, FilterComponents...>::Iterator::next()
 {
     if constexpr (sizeof...(FilterComponents) != 0) {
@@ -467,10 +465,10 @@ void EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<bool isConst, typename... FilterComponents>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::
   View<isConst, FilterComponents...>::Iterator::operator++()
-    -> EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-      View<isConst, FilterComponents...>::Iterator&
+    -> EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
+                                         metrix::type_list<Storages...>>>::View<isConst, FilterComponents...>::Iterator&
 {
     cursor_++;
     next();
@@ -479,7 +477,7 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<bool isConst, typename... FilterComponents>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::
   View<isConst, FilterComponents...>::Iterator::operator*() const -> std::tuple<Entity, FilterComponents&...>
 {
     auto entity = Entity{ cursor_, entityManager_.versions_[cursor_] };
@@ -491,21 +489,21 @@ auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_m
 
 template<typename... Components, typename... Storages>
 template<typename... FilterComponents>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getView()
-  const -> EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>,
-                                             easy_mp::type_list<Storages...>>>::View<true, FilterComponents...>
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getView()
+  const -> EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
+                                             metrix::type_list<Storages...>>>::View<true, FilterComponents...>
 {
-    return EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
-      View<true, FilterComponents...>{ *this };
+    return EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
+                                             metrix::type_list<Storages...>>>::View<true, FilterComponents...>{ *this };
 }
 
 template<typename... Components, typename... Storages>
 template<typename... FilterComponents>
-auto EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::getView()
-  -> EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>,
-                                       easy_mp::type_list<Storages...>>>::View<false, FilterComponents...>
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getView()
+  -> EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
+                                       metrix::type_list<Storages...>>>::View<false, FilterComponents...>
 {
-    return EntityManager<EntityManagerConfig<easy_mp::type_list<Components...>, easy_mp::type_list<Storages...>>>::
+    return EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::
       View<false, FilterComponents...>{ *this };
 }
 }

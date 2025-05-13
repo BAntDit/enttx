@@ -15,7 +15,8 @@ public:
     TestFixture()
       : entities_{ nullptr }
       , systems_{ nullptr }
-    {}
+    {
+    }
 
 protected:
     void SetUp() override

@@ -5,15 +5,14 @@
 #ifndef ENTTX_BASESYSTEM_H
 #define ENTTX_BASESYSTEM_H
 
-#include <cstddef>
-#include <easy-mp/type_list.h>
+#include <metrix/type_list.h>
 
 namespace enttx {
 template<class Derived>
 class BaseSystem
 {
 public:
-    using tag_t = easy_mp::type_list<>;
+    using tag_t = metrix::type_list<>;
 
     template<typename... Args>
     void init(Args&&... args);
@@ -23,8 +22,8 @@ public:
 
     template<typename... Components>
     static constexpr bool is_in_use_v =
-      std::is_same_v<typename easy_mp::inner_join<typename Derived::tag_t, easy_mp::type_list<Components...>>::type,
-                     easy_mp::type_list<Components...>>;
+      std::is_same_v<typename metrix::inner_join<typename Derived::tag_t, metrix::type_list<Components...>>::type,
+                     metrix::type_list<Components...>>;
 };
 
 template<class Derived>

@@ -10,11 +10,12 @@
 class TestSystem : public enttx::BaseSystem<TestSystem>
 {
 public:
-    using tag_t = easy_mp::type_list<uint32_t>;
+    using tag_t = metrix::type_list<uint32_t>;
 
     TestSystem()
       : product_{ 1 }
-    {}
+    {
+    }
 
     template<typename... Args>
     void init(Args&&... args);
@@ -33,7 +34,7 @@ public:
         }
     }
 
-    auto product() const -> uint32_t { return product_; }
+    [[nodiscard]] auto product() const -> uint32_t { return product_; }
 
 private:
     uint32_t product_;
