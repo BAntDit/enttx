@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(enttx VERSION 4.0.4.0)
 
-option(TESTS "whether needs to build tests" ON)
-
 file(GLOB_RECURSE INTERFACE_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 file(GLOB TEST_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h")
 file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp")

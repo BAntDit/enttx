@@ -1,6 +1,7 @@
 
 from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
+from conan.errors import ConanInvalidConfiguration
 
 class EnttxRecipe(ConanFile):
     name = "enttx"
@@ -11,6 +12,11 @@ class EnttxRecipe(ConanFile):
     settings = "os", "compiler", "arch", "build_type"
 
     exports_sources = "CMakeLists.txt", "*.cmake", ".clang-format", ".md", "src/*.h", "tests/*", "cmake/*"
+
+    def validate(self):
+        if self.settings.compiler == "msvc":
+            if int(str(self.settings.compiler.version)) < 192:
+                raise ConanInvalidConfiguration("Only Visual Studio 2019 (MSVC 16) and higher is supported!")
 
     def build_requirements(self):
         self.tool_requires("cmake/[>=3.10]")
@@ -38,6 +44,7 @@ class EnttxRecipe(ConanFile):
         else:
             tc.generator = "Ninja"
 
+        tc.variables["REQUIRED_CXX_STANDARD"] = "20"
         tc.generate()
 
     def build(self):

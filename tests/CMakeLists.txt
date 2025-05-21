@@ -14,7 +14,7 @@ set(SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 20
+    CXX_STANDARD ${REQUIRED_CXX_STANDARD}
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS OFF
 
@@ -34,6 +34,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     )
 endif()
 
-target_link_libraries(${PROJECT_NAME} gtest gtest_main -pthread)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest_main)
 
 add_test(NAME enttx-test COMMAND ${PROJECT_NAME})

@@ -1,4 +1,7 @@
 
 @PACKAGE_INIT@
 
+include(CMakeFindDependencyMacro)
+find_dependency(metrix REQUIRED)
+
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
