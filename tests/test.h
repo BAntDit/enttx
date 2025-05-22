@@ -8,6 +8,7 @@
 #include "../src/enttx.h"
 #include "configuration.h"
 #include <gtest/gtest.h>
+#include <array>
 
 class TestFixture : public testing::Test
 {
