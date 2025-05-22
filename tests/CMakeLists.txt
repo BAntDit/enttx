@@ -36,5 +36,6 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest)
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE metrix::metrix)
 
 add_test(NAME enttx-test COMMAND ${PROJECT_NAME})
