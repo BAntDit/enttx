@@ -40,7 +40,7 @@ class EnttxRecipe(ConanFile):
         tc = CMakeToolchain(self)
 
         if self.settings.compiler == "msvc":
-            tc.generator = "Visual Studio"
+            tc.generator = "Visual Studio 17 2022"
         else:
             tc.generator = "Ninja"
 
