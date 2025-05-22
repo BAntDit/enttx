@@ -9,6 +9,8 @@ include(ClangFormat.cmake)
 set(ALL_FILES_TO_ADJUST_CODESTYLE ${INTERFACE_HEADERS} ${TEST_HEADERS} ${TEST_SOURCES})
 CODE_STYLE_CORRECTION("${ALL_FILES_TO_ADJUST_CODESTYLE}")
 
+find_package(metrix REQUIRED)
+
 add_library(${PROJECT_NAME} INTERFACE)
 
 target_include_directories(
