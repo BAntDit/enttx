@@ -134,16 +134,16 @@ auto ComponentStorage<CHUNK_SIZE, INITIAL_CHUNK_COUNT, Component>::create(uint32
 
         auto pos = std::numeric_limits<uint32_t>::max();
 
-        for (auto it = std::next(indices_.begin(), index); it != std::next(indices_.begin(), maxValidIndex_ + 1);
-             it++) {
-            if (*it == std::numeric_limits<uint32_t>::max())
+        for (auto posIt = std::next(indices_.begin(), index); posIt != std::next(indices_.begin(), maxValidIndex_ + 1);
+             ++posIt) {
+            if (*posIt == std::numeric_limits<uint32_t>::max())
                 continue;
 
             if (pos == std::numeric_limits<uint32_t>::max()) {
-                pos = *it;
+                pos = *posIt;
             }
 
-            (*it)++;
+            (*posIt)++;
         }
 
         assert(pos < store_.size());
