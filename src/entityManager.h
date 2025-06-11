@@ -494,7 +494,8 @@ auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix:
 template<typename... Components, typename... Storages>
 template<typename... FilterComponents>
 auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getView()
-  const -> typename EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
+  const ->
+  typename EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
                                              metrix::type_list<Storages...>>>::template View<true, FilterComponents...>
 {
     return View<true, FilterComponents...>{ *this };
@@ -502,9 +503,9 @@ auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix:
 
 template<typename... Components, typename... Storages>
 template<typename... FilterComponents>
-auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getView()
-  -> typename EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
-                                       metrix::type_list<Storages...>>>::template View<false, FilterComponents...>
+auto EntityManager<EntityManagerConfig<metrix::type_list<Components...>, metrix::type_list<Storages...>>>::getView() ->
+  typename EntityManager<EntityManagerConfig<metrix::type_list<Components...>,
+                                             metrix::type_list<Storages...>>>::template View<false, FilterComponents...>
 {
     return View<false, FilterComponents...>{ *this };
 }
