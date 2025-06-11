@@ -11,6 +11,14 @@
 
 #include "baseComponentStorage.h"
 
+#if defined(max)
+#undef max
+#endif
+
+#if defined(min)
+#undef min
+#endif
+
 namespace enttx {
 template<size_t CHUNK_SIZE, size_t INITIAL_CHUNK_COUNT, typename Component>
 class ComponentStorage

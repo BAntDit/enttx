@@ -8,6 +8,10 @@
 #include <cstdint>
 #include <limits>
 
+#if defined(max)
+#undef max
+#endif
+
 namespace enttx {
 class Entity
 {
