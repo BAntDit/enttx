@@ -26,7 +26,7 @@ class EnttxRecipe(ConanFile):
 
     def requirements(self):
         self.requires("gtest/[~1.16]")
-        self.requires("metrix/[~1.5]")
+        self.requires("metrix/[~1.6]")
 
     def configure(self):
         self.settings.compiler.cppstd = "20"
