@@ -5,7 +5,7 @@ from conan.errors import ConanInvalidConfiguration
 
 class EnttxRecipe(ConanFile):
     name = "enttx"
-    version = "4.0.4.0"
+    version = "4.1.0.0"
     url = "https://github.com/BAntDit/enttx"
     description = "Compile-time and header-only Entity-Component-System library."
 

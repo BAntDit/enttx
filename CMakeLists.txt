@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(enttx VERSION 4.0.4.0)
+project(enttx VERSION 4.1.0.0)
 
 file(GLOB_RECURSE INTERFACE_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 file(GLOB TEST_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h")
